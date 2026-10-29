@@ -95,24 +95,24 @@ export default function App() {
         onOpenExpertModal={handleGoToContact}
       />
 
-      {/* Floating Instant WhatsApp Button */}
+      {/* Floating Instant WhatsApp Button — Cleanly positioned above mobile CTA buttons */}
       <aside
         aria-label="Instant WhatsApp Contact"
-        className="fixed bottom-6 right-5 sm:bottom-8 sm:right-7 z-40"
+        className="fixed bottom-20 sm:bottom-8 right-4 sm:right-7 z-40"
       >
         <a
           href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20solar%20rooftop%20solutions."
           target="_blank"
           rel="noopener noreferrer"
           title="Chat on WhatsApp (+91 96002 81759)"
-          className="group flex items-center gap-2.5 bg-white pl-3.5 pr-4 py-2.5 rounded-full shadow-2xl border-2 border-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40 cursor-pointer"
+          className="group flex items-center gap-2 sm:gap-2.5 bg-white p-2.5 sm:pl-3.5 sm:pr-4 sm:py-2.5 rounded-full shadow-2xl border-2 border-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40 cursor-pointer"
         >
-          <span className="relative flex h-3 w-3">
+          <span className="relative flex h-3 w-3 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
             <span className="relative inline-flex rounded-full h-3 w-3 bg-[#25D366]" />
           </span>
           <WhatsAppLogo className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
-          <span className="text-xs sm:text-sm font-black text-[#071B49] group-hover:text-white transition-colors">
+          <span className="hidden sm:inline text-xs sm:text-sm font-black text-[#071B49] group-hover:text-white transition-colors">
             WhatsApp Direct
           </span>
         </a>

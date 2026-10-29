@@ -79,7 +79,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
     <section
       id="home"
       onMouseMove={handleMouseMove}
-      className="relative w-full h-screen min-h-[600px] max-h-[1080px] flex items-center overflow-hidden bg-[#EAF6FF]"
+      className="relative w-full min-h-[100dvh] h-[100dvh] max-h-[1080px] flex items-center overflow-hidden bg-[#EAF6FF]"
       aria-label="Solar Arise Homepage Hero"
     >
       {/* 1. Full-screen Cinematic Solar-Powered House Background Image (One Screen Fit) */}
@@ -97,7 +97,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
 
         {/* Soft Left-Sided Atmospheric Gradient Overlay for Typography Contrast */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/60 to-transparent sm:from-white/80 sm:via-white/30 sm:to-transparent lg:w-[62%] pointer-events-none"
+          className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent sm:from-white/80 sm:via-white/30 sm:to-transparent lg:w-[62%] pointer-events-none"
           aria-hidden="true"
         />
 
@@ -112,34 +112,34 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
       <SolarCanvas />
 
       {/* 3. Hero Foreground Content Container (Centered 3D Text & Trust Badges on Left) */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-24 lg:pt-20 pb-20 sm:pb-4 flex items-center h-full">
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 sm:pt-24 lg:pt-20 pb-24 sm:pb-8 flex items-center h-full">
         <motion.div
           style={{ rotateX: tiltX, rotateY: tiltY }}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-xl text-left my-auto"
+          className="max-w-xl text-left my-auto w-full"
         >
 
           {/* Eyebrow Pill with Official Round Logo */}
-          <motion.div variants={itemVariants} className="mb-3.5 inline-flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#239B35]/30 shadow-sm max-w-full">
+          <motion.div variants={itemVariants} className="mb-3.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#239B35]/30 shadow-sm max-w-full">
             <img
               src="/images/solar-arise-logo-192.webp"
               alt="Solar Arise Official Round Logo"
-              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover ring-1 ring-[#239B35]/40 shrink-0"
-              width="24"
-              height="24"
+              className="w-5 h-5 rounded-full object-cover ring-1 ring-[#239B35]/40 shrink-0"
+              width="20"
+              height="20"
             />
             <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase text-[#071B49] truncate">
               Solar Arise <span className="text-[#239B35]">•</span> A Unique Reliable Solar Product
             </span>
           </motion.div>
 
-          {/* Main Headline — Times New Roman, bright & thick like the original image */}
-          <motion.div variants={itemVariants} className="mb-4 select-none">
+          {/* Main Headline — Times New Roman, bright & thick with clean word spacing */}
+          <motion.div variants={itemVariants} className="mb-4 sm:mb-5 select-none">
             <div
               aria-label="Your Home. Your Energy. Your Future."
-              className="leading-none"
+              className="leading-none space-y-1 sm:space-y-1.5"
             >
               {/* ── shared style ── */}
               {(() => {
@@ -147,21 +147,22 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
                   fontFamily: "'Times New Roman', Times, Georgia, serif",
                   fontWeight: 900,
                   fontStyle: 'italic',
-                  lineHeight: 1.02,
-                  display: 'block',
-                  letterSpacing: '-0.01em',
-                  fontSize: 'clamp(34px, 8.5vw, 104px)',
+                  lineHeight: 1.04,
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  letterSpacing: '0.01em',
+                  fontSize: 'clamp(32px, 8.5vw, 96px)',
                 };
                 const shadow = (color) =>
-                  `2px 2px 0 ${color}cc, 3px 3px 0 ${color}88, 4px 4px 6px rgba(0,0,0,0.25)`;
+                  `2px 2px 0 ${color}cc, 3px 3px 0 ${color}88, 4px 4px 6px rgba(0,0,0,0.22)`;
                 return (
                   <>
-                    {/* Line 1: YourHome. */}
-                    <h1 style={{ ...base }} className="m-0 p-0">
+                    {/* Line 1: Your Home. */}
+                    <h1 style={{ ...base }} className="m-0 p-0 flex items-baseline">
                       <span style={{
                         color: '#1040CC',
                         textShadow: shadow('#0033AA'),
-                      }}>Your</span>
+                      }} className="mr-2 sm:mr-3">Your</span>
                       <span style={{
                         color: '#00AAEE',
                         textShadow: shadow('#0077CC'),
@@ -172,12 +173,12 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
                       }}>.</span>
                     </h1>
 
-                    {/* Line 2: YourEnergy. */}
-                    <p style={{ ...base }} className="m-0 p-0">
+                    {/* Line 2: Your Energy. */}
+                    <p style={{ ...base }} className="m-0 p-0 flex items-baseline">
                       <span style={{
                         color: '#1040CC',
                         textShadow: shadow('#0033AA'),
-                      }}>Your</span>
+                      }} className="mr-2 sm:mr-3">Your</span>
                       <span style={{
                         color: '#1DBF2E',
                         textShadow: shadow('#0E8A1C'),
@@ -188,12 +189,12 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
                       }}>.</span>
                     </p>
 
-                    {/* Line 3: YourFuture! */}
-                    <p style={{ ...base }} className="m-0 p-0">
+                    {/* Line 3: Your Future! */}
+                    <p style={{ ...base }} className="m-0 p-0 flex items-baseline">
                       <span style={{
                         color: '#1040CC',
                         textShadow: shadow('#0033AA'),
-                      }}>Your</span>
+                      }} className="mr-2 sm:mr-3">Your</span>
                       <span style={{
                         color: '#00DDFF',
                         textShadow: shadow('#009EC4'),
@@ -209,40 +210,40 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
             </div>
           </motion.div>
 
-          {/* Trust Indicators Row */}
+          {/* Trust Indicators Card — Clean alignment on mobile and desktop */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex flex-wrap items-center gap-2.5 sm:gap-4 py-2 px-3.5 sm:px-4 rounded-xl glass-card text-xs sm:text-sm font-bold text-[#071B49] shadow-md border border-white/95"
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-4 py-2.5 px-3.5 sm:px-4 rounded-2xl glass-card text-xs sm:text-sm font-bold text-[#071B49] shadow-md border border-white/95 w-full sm:w-auto max-w-md backdrop-blur-md bg-white/85"
             aria-label="Trust Indicators"
           >
             {/* Item 1 */}
-            <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#239B35]/15 text-[#239B35]">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#239B35]/15 text-[#239B35] shrink-0">
                 <Home className="w-3.5 h-3.5" />
               </span>
-              <span>Residential & Commercial</span>
+              <span className="whitespace-nowrap">Residential & Commercial</span>
             </div>
 
             {/* Separator */}
             <span className="hidden sm:inline-block w-1 h-3 bg-slate-300 rounded-full" aria-hidden="true" />
 
             {/* Item 2 */}
-            <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0866C6]/15 text-[#0866C6]">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0866C6]/15 text-[#0866C6] shrink-0">
                 <Zap className="w-3.5 h-3.5" />
               </span>
-              <span>Expert Installation</span>
+              <span className="whitespace-nowrap">Expert Installation</span>
             </div>
 
             {/* Separator */}
             <span className="hidden sm:inline-block w-1 h-3 bg-slate-300 rounded-full" aria-hidden="true" />
 
             {/* Item 3 */}
-            <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#70D943]/20 text-[#239B35]">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#70D943]/20 text-[#239B35] shrink-0">
                 <ShieldCheck className="w-3.5 h-3.5" />
               </span>
-              <span>Reliable Solar Solutions</span>
+              <span className="whitespace-nowrap">Reliable Solar Solutions</span>
             </div>
           </motion.div>
 
@@ -250,7 +251,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
       </div>
 
       {/* 4. CTA Buttons — centered on mobile, right-aligned on desktop */}
-      <div className="absolute bottom-6 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-6 lg:right-10 xl:right-14 z-30 flex flex-row sm:flex-row items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
+      <div className="absolute bottom-5 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-6 lg:right-10 xl:right-14 z-30 flex flex-row items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
         {/* Primary CTA: Scrolls to Next Section */}
         <button
           type="button"

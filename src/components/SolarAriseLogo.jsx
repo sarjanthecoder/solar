@@ -7,7 +7,7 @@ export default function SolarAriseLogo({
   textColor = 'default', // 'default' | 'white'
 }) {
   return (
-    <div className={`inline-flex items-center gap-3 select-none ${className}`}>
+    <div className={`inline-flex items-center gap-2 sm:gap-2.5 select-none ${className}`}>
       {/* Pristine Round Emblem Logo */}
       <div className={`relative shrink-0 rounded-full overflow-hidden shadow-md ring-2 ring-white/90 bg-white transition-transform duration-300 group-hover:scale-105 ${imgClassName}`}>
         <img
