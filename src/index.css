@@ -21,6 +21,7 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   body {
@@ -33,6 +34,7 @@
     color: var(--deep-navy);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 
   /* 200Hz / High Refresh Rate GPU Acceleration & Zero-Jank Rendering */

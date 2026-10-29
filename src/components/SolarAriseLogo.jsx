@@ -25,16 +25,16 @@ export default function SolarAriseLogo({
       {/* Brand Typography */}
       {showText && (
         <div className="flex flex-col tracking-tight leading-none text-left">
-          <div className="flex items-center gap-1 font-black tracking-wider text-base sm:text-lg uppercase font-stylish">
+          <div className="flex items-center gap-1 font-black tracking-wider text-sm sm:text-base uppercase font-stylish">
             <span className={textColor === 'white' ? 'text-white' : 'text-[#0866C6]'}>SOLAR</span>
             <span className={textColor === 'white' ? 'text-[#70D943]' : 'text-[#239B35]'}>ARISE</span>
           </div>
           <span
-            className={`text-[8px] sm:text-[9px] font-extrabold tracking-wider uppercase mt-0.5 ${
+            className={`text-[7px] sm:text-[9px] font-extrabold tracking-wider uppercase mt-0.5 ${
               textColor === 'white' ? 'text-slate-300' : 'text-[#071B49]/80'
             }`}
           >
-            A Unique Reliable Solar Product
+            A UNIQUE RELIABLE SOLAR PRODUCT
           </span>
         </div>
       )}

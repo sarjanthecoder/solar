@@ -20,6 +20,7 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
 
   const isManualScrollingRef = useRef(false);
   const activeMobileTabRef = useRef(null);
+  const mobileNavStripRef = useRef(null);
 
   // Background blur on scroll
   useEffect(() => {
@@ -82,13 +83,15 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
     return () => window.removeEventListener('scroll', handleScrollSpy);
   }, []);
 
-  // Auto-scroll the mobile tab bar to keep active tab centered
+  // Auto-scroll the mobile tab bar container horizontally to keep active tab centered (zero vertical jumping)
   useEffect(() => {
-    if (activeMobileTabRef.current) {
-      activeMobileTabRef.current.scrollIntoView({
+    if (mobileNavStripRef.current && activeMobileTabRef.current) {
+      const container = mobileNavStripRef.current;
+      const tab = activeMobileTabRef.current;
+      const targetScrollLeft = tab.offsetLeft - (container.clientWidth / 2) + (tab.clientWidth / 2);
+      container.scrollTo({
+        left: Math.max(0, targetScrollLeft),
         behavior: 'smooth',
-        inline: 'center',
-        block: 'nearest',
       });
     }
   }, [activeTab]);
@@ -102,21 +105,31 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
     isManualScrollingRef.current = true;
 
     const id = href.replace('#', '');
-    const target = document.getElementById(id);
-    if (target) {
-      const isMobile = window.innerWidth < 1024;
-      const navOffset = isMobile ? 98 : 75;
-      const elementPosition = target.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
-
+    if (id === 'home') {
       window.scrollTo({
-        top: offsetPosition,
+        top: 0,
         behavior: 'smooth',
       });
-
       try {
-        window.history.pushState(null, '', href);
+        window.history.pushState(null, '', '#home');
       } catch (_) {}
+    } else {
+      const target = document.getElementById(id);
+      if (target) {
+        const isMobile = window.innerWidth < 1024;
+        const navOffset = isMobile ? 96 : 75;
+        const elementPosition = target.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth',
+        });
+
+        try {
+          window.history.pushState(null, '', href);
+        } catch (_) {}
+      }
     }
 
     // Release lock after smooth scroll completes
@@ -144,10 +157,10 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
             <a
               href="#home"
               aria-label="Solar Arise Homepage"
-              className="group flex items-center focus:outline-none focus:ring-2 focus:ring-[#239B35] rounded-lg cursor-pointer py-1"
+              className="group flex items-center focus:outline-none focus:ring-2 focus:ring-[#239B35] rounded-lg cursor-pointer py-1 shrink-0"
               onClick={(e) => handleNavClick(e, '#home', 'Home')}
             >
-              <SolarAriseLogo imgClassName="h-9 w-9 sm:h-10 sm:w-10" showText={true} />
+              <SolarAriseLogo imgClassName="h-8 w-8 sm:h-10 sm:w-10" showText={true} />
             </a>
 
             {/* Center: Desktop Navigation Links with Bottom Dash Highlighter */}
@@ -180,18 +193,18 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
               })}
             </div>
 
-            {/* Right: WhatsApp Icon + "Get Free Quote" CTA Button + Mobile Toggle */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* WhatsApp Quick Action Button */}
+            {/* Right: Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* WhatsApp — hidden on mobile (available in drawer) */}
               <a
                 href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20a%20solar%20solution."
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Chat on WhatsApp"
                 title="Chat with Solar Specialist on WhatsApp"
-                className="relative p-2 sm:p-2 rounded-full bg-white text-[#239B35] border border-[#239B35]/30 hover:bg-[#239B35] hover:text-white hover:border-[#239B35] shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#239B35]"
+                className="hidden sm:flex p-2 rounded-full bg-white text-[#239B35] border border-[#239B35]/30 hover:bg-[#239B35] hover:text-white hover:border-[#239B35] shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#239B35]"
               >
-                <MessageCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                <MessageCircle className="w-4 h-4" />
                 <span className="sr-only">WhatsApp</span>
               </a>
 
@@ -199,14 +212,18 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
               <button
                 type="button"
                 onClick={onOpenQuoteModal}
-                className="group relative overflow-hidden btn-3d-primary text-white text-xs sm:text-sm font-bold py-2 sm:py-2.5 px-3.5 sm:px-5 rounded-full flex items-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#239B35] focus:ring-offset-2"
+                className="group relative overflow-hidden btn-3d-primary text-white font-bold py-2 sm:py-2.5 px-3 sm:px-5 rounded-full flex items-center gap-1 sm:gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#239B35] focus:ring-offset-2"
               >
                 <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-light-sweep pointer-events-none" />
-                <span className="relative z-10 tracking-wide">Get Free Quote</span>
-                <ArrowUpRight className="relative z-10 w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                {/* Responsive label */}
+                <span className="relative z-10 tracking-wide text-[11px] sm:text-sm leading-tight text-center">
+                  <span className="sm:hidden">Get Quote</span>
+                  <span className="hidden sm:inline">Get Free Quote</span>
+                </span>
+                <ArrowUpRight className="relative z-10 w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
               </button>
 
-              {/* Mobile Menu Toggle (for full options & quick dial) */}
+              {/* Mobile Menu Toggle */}
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -220,7 +237,10 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
         </div>
 
         {/* ── MOBILE HORIZONTAL NAVIGATION STRIP WITH ANIMATED BOTTOM DASH ── */}
-        <div className="lg:hidden w-full overflow-x-auto border-t border-slate-200/80 bg-white/95 backdrop-blur-md px-2 py-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div
+          ref={mobileNavStripRef}
+          className="lg:hidden w-full overflow-x-auto border-t border-slate-200/90 bg-white/95 backdrop-blur-md px-2 py-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
           <div className="flex items-center gap-1 min-w-max px-2">
             {NAV_LINKS.map((link) => {
               const isActive = activeTab === link.name;
@@ -230,7 +250,7 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                   ref={isActive ? activeMobileTabRef : null}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href, link.name)}
-                  className={`relative px-3 py-1.5 text-xs font-bold tracking-tight transition-colors duration-200 cursor-pointer whitespace-nowrap ${
+                  className={`relative px-3.5 py-2 text-xs font-bold tracking-tight transition-colors duration-200 cursor-pointer whitespace-nowrap ${
                     isActive
                       ? 'text-[#0F1F5C] font-black'
                       : 'text-slate-500 hover:text-[#0F1F5C]'
@@ -242,7 +262,7 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                   {isActive && (
                     <motion.span
                       layoutId="mobileNavBottomDash"
-                      className="absolute -bottom-1 left-1.5 right-1.5 h-[2.5px] bg-gradient-to-r from-[#239B35] to-[#70D943] rounded-full shadow-[0_2px_6px_rgba(35,155,53,0.45)]"
+                      className="absolute bottom-0 left-1 right-1 h-[2.5px] bg-gradient-to-r from-[#239B35] to-[#70D943] rounded-full shadow-[0_2px_8px_rgba(35,155,53,0.5)]"
                       transition={{ type: 'spring', stiffness: 450, damping: 32 }}
                     />
                   )}

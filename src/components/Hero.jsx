@@ -111,7 +111,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
       <SolarCanvas />
 
       {/* 3. Hero Foreground Content Container (Centered 3D Text & Trust Badges on Left) */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 lg:pt-20 pb-4 flex items-center h-full">
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-24 lg:pt-20 pb-20 sm:pb-4 flex items-center h-full">
         <motion.div
           style={{ rotateX: tiltX, rotateY: tiltY }}
           variants={containerVariants}
@@ -121,15 +121,15 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
         >
 
           {/* Eyebrow Pill with Official Round Logo */}
-          <motion.div variants={itemVariants} className="mb-3.5 inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#239B35]/30 shadow-sm">
+          <motion.div variants={itemVariants} className="mb-3.5 inline-flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#239B35]/30 shadow-sm max-w-full">
             <img
               src="/images/solar-arise-logo-192.webp"
               alt="Solar Arise Official Round Logo"
-              className="w-6 h-6 rounded-full object-cover ring-1 ring-[#239B35]/40"
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover ring-1 ring-[#239B35]/40 shrink-0"
               width="24"
               height="24"
             />
-            <span className="text-xs font-black tracking-wider uppercase text-[#071B49]">
+            <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase text-[#071B49] truncate">
               Solar Arise <span className="text-[#239B35]">•</span> A Unique Reliable Solar Product
             </span>
           </motion.div>
@@ -149,13 +149,14 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
                   lineHeight: 1.02,
                   display: 'block',
                   letterSpacing: '-0.01em',
+                  fontSize: 'clamp(34px, 8.5vw, 104px)',
                 };
                 const shadow = (color) =>
                   `2px 2px 0 ${color}cc, 3px 3px 0 ${color}88, 4px 4px 6px rgba(0,0,0,0.25)`;
                 return (
                   <>
                     {/* Line 1: YourHome. */}
-                    <h1 style={{ ...base, fontSize: 'clamp(62px, 10vw, 104px)' }} className="m-0 p-0">
+                    <h1 style={{ ...base }} className="m-0 p-0">
                       <span style={{
                         color: '#1040CC',
                         textShadow: shadow('#0033AA'),
@@ -171,7 +172,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
                     </h1>
 
                     {/* Line 2: YourEnergy. */}
-                    <p style={{ ...base, fontSize: 'clamp(62px, 10vw, 104px)' }} className="m-0 p-0">
+                    <p style={{ ...base }} className="m-0 p-0">
                       <span style={{
                         color: '#1040CC',
                         textShadow: shadow('#0033AA'),
@@ -187,7 +188,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
                     </p>
 
                     {/* Line 3: YourFuture! */}
-                    <p style={{ ...base, fontSize: 'clamp(62px, 10vw, 104px)' }} className="m-0 p-0">
+                    <p style={{ ...base }} className="m-0 p-0">
                       <span style={{
                         color: '#1040CC',
                         textShadow: shadow('#0033AA'),
@@ -247,31 +248,29 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
         </motion.div>
       </div>
 
-      {/* 4. The 2 CTA Buttons Positioned at the Full Right Edge of the Screen */}
-      <div className="absolute bottom-6 sm:bottom-8 right-4 sm:right-6 lg:right-10 xl:right-14 z-30 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-        {/* Primary CTA: Scrolls to Next Section (3D Solar Experience / Services) */}
+      {/* 4. CTA Buttons — centered on mobile, right-aligned on desktop */}
+      <div className="absolute bottom-6 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-6 lg:right-10 xl:right-14 z-30 flex flex-row sm:flex-row items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
+        {/* Primary CTA: Scrolls to Next Section */}
         <button
           type="button"
           onClick={handleExploreSolar}
-          className="group relative overflow-hidden btn-3d-primary py-3 sm:py-3.5 px-6 sm:px-7 rounded-full text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#70D943]/40 shadow-2xl"
+          className="group relative overflow-hidden btn-3d-primary py-2.5 sm:py-3.5 px-4 sm:px-7 rounded-full text-white font-extrabold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#70D943]/40 shadow-2xl flex-1 sm:flex-initial"
           aria-label="Explore Solar Solutions"
         >
-          {/* Animated Light Sweep Shimmer Effect */}
           <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12 animate-light-sweep pointer-events-none" />
-
-          <span className="relative z-10 tracking-wide">Explore Solar Solutions</span>
-          <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+          <span className="relative z-10 tracking-wide">Explore Solar</span>
+          <ArrowRight className="relative z-10 w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
         </button>
 
         {/* Secondary CTA: Scrolls directly to Contact Section */}
         <button
           type="button"
           onClick={handleTalkToExpert}
-          className="group btn-glass-secondary py-3 sm:py-3.5 px-6 sm:px-7 rounded-full font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#0866C6]/25 shadow-xl bg-white/95"
+          className="group btn-glass-secondary py-2.5 sm:py-3.5 px-4 sm:px-7 rounded-full font-bold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#0866C6]/25 shadow-xl bg-white/95 flex-1 sm:flex-initial"
           aria-label="Talk to an Expert"
         >
-          <PhoneCall className="w-4 h-4 text-[#0866C6] transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
-          <span>Talk to an Expert</span>
+          <PhoneCall className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0866C6] transition-transform duration-300 group-hover:rotate-12" />
+          <span>Talk to Expert</span>
         </button>
       </div>
 

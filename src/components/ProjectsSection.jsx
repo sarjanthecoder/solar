@@ -178,7 +178,7 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
                     lineHeight: 1.02,
                     display: 'block',
                     letterSpacing: '-0.01em',
-                    fontSize: 'clamp(58px, 9.5vw, 100px)',
+                    fontSize: 'clamp(36px, 9.5vw, 100px)',
                   };
                   const shadow = (color) =>
                     `2px 2px 0 ${color}cc, 3px 3px 0 ${color}88, 4px 4px 6px rgba(0,0,0,0.25)`;
