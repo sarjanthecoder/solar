@@ -36,20 +36,21 @@ export default function Solar3DScrollSection() {
 
     let img = imagesRef.current[frameIndex];
 
-    // If frame is not yet fully loaded, find closest loaded frame for instant 200Hz response
+    // If frame is not yet fully loaded, find closest loaded frame among ALL available frames
     if (!img || !img.complete || img.naturalWidth === 0) {
-      for (let offset = 1; offset < 30; offset++) {
-        const prev = imagesRef.current[frameIndex - offset];
-        if (prev && prev.complete && prev.naturalWidth > 0) {
-          img = prev;
-          break;
-        }
-        const next = imagesRef.current[frameIndex + offset];
-        if (next && next.complete && next.naturalWidth > 0) {
-          img = next;
-          break;
+      let bestDist = Infinity;
+      let fallbackImg = null;
+      for (let i = 1; i <= TOTAL_FRAMES; i++) {
+        const candidate = imagesRef.current[i];
+        if (candidate && candidate.complete && candidate.naturalWidth > 0) {
+          const dist = Math.abs(i - frameIndex);
+          if (dist < bestDist) {
+            bestDist = dist;
+            fallbackImg = candidate;
+          }
         }
       }
+      img = fallbackImg;
     }
 
     if (!img || !img.complete || img.naturalWidth === 0) return;
@@ -117,14 +118,25 @@ export default function Solar3DScrollSection() {
     lastDrawnFrameRef.current = -1;
     let isCancelled = false;
 
-    // 1. Load initial frame immediately
+    // 1. Load initial frame and final frame immediately so start and end are always ready
     const firstImg = new Image();
     firstImg.decoding = 'async';
     firstImg.src = getFrameUrl(1, isMobile);
     firstImg.onload = () => {
       if (!isCancelled) {
         imagesRef.current[1] = firstImg;
-        drawFrame(1, true);
+        if (lastDrawnFrameRef.current <= 1) {
+          drawFrame(1, true);
+        }
+      }
+    };
+
+    const lastImg = new Image();
+    lastImg.decoding = 'async';
+    lastImg.src = getFrameUrl(TOTAL_FRAMES, isMobile);
+    lastImg.onload = () => {
+      if (!isCancelled) {
+        imagesRef.current[TOTAL_FRAMES] = lastImg;
       }
     };
 
@@ -210,7 +222,7 @@ export default function Solar3DScrollSection() {
     <section
       ref={containerRef}
       id="3d-solar-experience"
-      className="relative w-full h-[380vh] sm:h-[420vh] bg-[#07111e] select-none"
+      className="relative w-full select-none bg-white"
       style={{ position: 'relative', height: '400vh', width: '100%' }}
       aria-label="Interactive 3D Solar Experience"
     >
@@ -222,7 +234,7 @@ export default function Solar3DScrollSection() {
         PURE 3D ANIMATION: Zero text boxes, zero frame counters, completely unobstructed view.
       */}
       <div
-        className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-[#07111e] z-20"
+        className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-white z-20"
         style={{ position: 'sticky', top: 0, height: '100vh', width: '100%' }}
       >
         {/* Fullscreen High-Definition 3D Canvas */}

@@ -273,9 +273,6 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
           <span>Talk to Expert</span>
         </button>
       </div>
-
-      {/* Seamless Transition Overlay into 3D Scroll Section (Zero Cut Line) */}
-      <div className="absolute bottom-0 left-0 right-0 h-28 sm:h-40 bg-gradient-to-b from-transparent via-[#07111e]/60 to-[#07111e] pointer-events-none z-20" />
     </section>
   );
 }
