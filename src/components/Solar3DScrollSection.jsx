@@ -222,20 +222,30 @@ export default function Solar3DScrollSection() {
     <section
       ref={containerRef}
       id="3d-solar-experience"
-      className="relative w-full select-none bg-white"
-      style={{ position: 'relative', height: '400vh', width: '100%' }}
+      className="relative w-full select-none"
+      style={{
+        position: 'relative',
+        height: isMobile ? '220vh' : '260vh',
+        width: '100%',
+      }}
       aria-label="Interactive 3D Solar Experience"
     >
       {/* 
         Sticky Viewport:
-        STAYS CONSTANTLY PINNED at top: 0 while scrolling through the 400vh container.
+        STAYS CONSTANTLY PINNED at top: 0 while scrolling through the container.
         ONLY when the animation reaches 100% (frame 299) and the container ends,
         does the page continue scrolling down into ServicesSection!
         PURE 3D ANIMATION: Zero text boxes, zero frame counters, completely unobstructed view.
       */}
       <div
-        className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-white z-20"
-        style={{ position: 'sticky', top: 0, height: '100vh', width: '100%' }}
+        className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center z-20"
+        style={{
+          position: '-webkit-sticky',
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
+          width: '100%',
+        }}
       >
         {/* Fullscreen High-Definition 3D Canvas */}
         <canvas
