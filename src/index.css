@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --solar-blue: #0866C6;
+    --deep-navy: #071B49;
+    --solar-green: #239B35;
+    --bright-green: #70D943;
+    --pure-white: #FFFFFF;
+    --soft-sky: #EAF6FF;
+    --solar-amber: #FB8500;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    width: 100%;
+    min-height: 100%;
+    font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, -apple-system, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    background-color: var(--soft-sky);
+    color: var(--deep-navy);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 200Hz / High Refresh Rate GPU Acceleration & Zero-Jank Rendering */
+  canvas {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+  }
+}
+
+/* Modular Architectural Font Utilities */
+.font-modular {
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-display-modular {
+  font-family: 'Syne', 'Space Grotesk', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.font-stylish {
+  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.font-body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+.font-mono-modular {
+  font-family: 'Space Grotesk', monospace;
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+/* 3D Dimensional Typography */
+.text-3d-blue {
+  color: #0866C6;
+  text-shadow:
+    0 1px 0 #0654a3,
+    0 2px 0 #054586,
+    0 3px 0 #043669,
+    0 4px 0 #03274d,
+    0 5px 0 #021a34,
+    0 8px 16px rgba(7, 27, 73, 0.22);
+}
+
+.text-3d-green {
+  color: #239B35;
+  text-shadow:
+    0 1px 0 #1e852d,
+    0 2px 0 #186e25,
+    0 3px 0 #13571d,
+    0 4px 0 #0d4115,
+    0 5px 0 #082d0e,
+    0 8px 16px rgba(35, 155, 53, 0.25);
+}
+
+.text-3d-future {
+  background: linear-gradient(135deg, #071B49 20%, #0866C6 60%, #239B35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #053b70)
+         drop-shadow(0 3px 0 #032549)
+         drop-shadow(0 7px 14px rgba(7, 27, 73, 0.2));
+}
+
+@media (max-width: 640px) {
+  .text-3d-blue {
+    text-shadow:
+      0 1px 0 #0654a3,
+      0 2px 0 #043669,
+      0 4px 10px rgba(7, 27, 73, 0.2);
+  }
+  .text-3d-green {
+    text-shadow:
+      0 1px 0 #1e852d,
+      0 2px 0 #13571d,
+      0 4px 10px rgba(35, 155, 53, 0.25);
+  }
+  .text-3d-future {
+    filter: drop-shadow(0 1px 0 #053b70)
+           drop-shadow(0 2px 0 #032549)
+           drop-shadow(0 5px 10px rgba(7, 27, 73, 0.2));
+  }
+}
+
+/* Glassmorphism Styles */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 35px -5px rgba(7, 27, 73, 0.08), 0 2px 6px rgba(7, 27, 73, 0.03);
+}
+
+.glass-nav-scrolled {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 14px 40px -6px rgba(7, 27, 73, 0.14), 0 4px 12px rgba(7, 27, 73, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 30px -4px rgba(7, 27, 73, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 18px -2px rgba(7, 27, 73, 0.08);
+}
+
+/* 3D Button Depth */
+.btn-3d-primary {
+  background: linear-gradient(135deg, #239B35 0%, #2BB23E 50%, #70D943 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 -2px 0 rgba(10, 60, 20, 0.3) inset,
+    0 10px 24px -4px rgba(35, 155, 53, 0.45),
+    0 4px 8px -2px rgba(35, 155, 53, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-3d-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 -2px 0 rgba(10, 60, 20, 0.3) inset,
+    0 16px 32px -4px rgba(35, 155, 53, 0.55),
+    0 6px 12px -2px rgba(35, 155, 53, 0.3);
+}
+
+.btn-3d-primary:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2) inset,
+    0 4px 12px rgba(35, 155, 53, 0.35);
+}
+
+.btn-glass-secondary {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(8, 102, 198, 0.35);
+  color: #071B49;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 20px -3px rgba(7, 27, 73, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-glass-secondary:hover {
+  background: #FFFFFF;
+  border-color: #0866C6;
+  color: #0866C6;
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 14px 28px -4px rgba(8, 102, 198, 0.18);
+}
+
+.btn-glass-secondary:active {
+  transform: translateY(1px);
+}
+
+/* Light sweep shimmer effect */
+@keyframes lightSweep {
+  0% {
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-25deg);
+  }
+}
+
+.animate-light-sweep {
+  animation: lightSweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Pulse Glow */
+@keyframes solarPulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.animate-solar-pulse {
+  animation: solarPulse 3s ease-in-out infinite;
+}
+
+/* Floating animation for badge */
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: gentleFloat 4s ease-in-out infinite;
+}
+
+/* Custom range slider for solar calculator */
+input[type="range"] {
+  accent-color: #239B35;
+}
