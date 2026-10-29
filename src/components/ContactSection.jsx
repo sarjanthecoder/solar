@@ -248,8 +248,6 @@ export default function ContactSection() {
 
       </div>
 
-      {/* Seamless Blend into Footer (Zero Cut Line) */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 sm:h-36 bg-gradient-to-b from-transparent via-[#071B49]/80 to-[#071B49] pointer-events-none z-20" />
     </section>
   );
 }
