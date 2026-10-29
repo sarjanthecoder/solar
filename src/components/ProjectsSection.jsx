@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   TrendingUp,
 } from 'lucide-react';
+import { WhatsAppLogo, GoogleMapsLogo } from './BrandLogos';
 
 const PROJECTS_DATA = [
   {
@@ -367,7 +368,7 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
 
                     {/* Location */}
                     <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5">
-                      <MapPin className="w-3 h-3 text-[#70D943]" />
+                      <GoogleMapsLogo className="w-3.5 h-3.5 shrink-0" />
                       <span>{project.location}</span>
                     </div>
                   </div>
@@ -446,9 +447,9 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
               href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20want%20to%20schedule%20a%20site%20visit."
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-4 rounded-full bg-white border-2 border-slate-300 text-[#071B49] hover:border-[#239B35] hover:text-[#239B35] font-black text-base transition-all flex items-center justify-center gap-2"
+              className="px-6 py-4 rounded-full bg-white border-2 border-[#25D366]/40 text-[#071B49] hover:border-[#25D366] hover:text-[#25D366] font-black text-base transition-all flex items-center justify-center gap-2.5 shadow-sm"
             >
-              <MessageCircle className="w-4 h-4 text-[#239B35]" />
+              <WhatsAppLogo className="w-5 h-5 shrink-0" />
               <span>Chat on WhatsApp</span>
             </a>
           </div>
@@ -498,7 +499,7 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
               </div>
               <div className="p-6 sm:p-8">
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold mb-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#239B35]" />
+                  <GoogleMapsLogo className="w-4 h-4 shrink-0" />
                   <span>{selectedProject.location}</span>
                 </div>
                 <h3 className="text-2xl font-black text-[#071B49] mb-2 font-stylish">{selectedProject.title}</h3>
@@ -517,16 +518,25 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
                     <div className="text-sm font-extrabold text-[#0866C6]">{selectedProject.co2Offset}</div>
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => {
                       setSelectedProject(null);
                       onOpenQuoteModal();
                     }}
-                    className="flex-1 py-3.5 rounded-xl bg-[#239B35] hover:bg-[#1e842d] text-white font-bold text-sm shadow-md"
+                    className="flex-1 py-3.5 rounded-xl bg-[#0866C6] hover:bg-[#0652a1] text-white font-bold text-sm shadow-md"
                   >
                     Request Similar Installation
                   </button>
+                  <a
+                    href={`https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20a%20project%20like%20${encodeURIComponent(selectedProject.title)}.`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-3.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md transition-colors"
+                  >
+                    <WhatsAppLogo className="w-4 h-4 shrink-0" />
+                    <span>WhatsApp Inquiry</span>
+                  </a>
                   <button
                     onClick={() => setSelectedProject(null)}
                     className="px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#071B49] font-semibold text-sm"

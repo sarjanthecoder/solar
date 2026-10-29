@@ -18,6 +18,7 @@ import {
   MessageCircle,
   Sparkles,
 } from 'lucide-react';
+import { WhatsAppLogo } from './BrandLogos';
 
 export default function SolarProductsSection({ onOpenQuoteModal, onOpenExpertModal }) {
   const products = [
@@ -372,9 +373,9 @@ export default function SolarProductsSection({ onOpenQuoteModal, onOpenExpertMod
               href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20solar%20hardware%20pricing."
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-4 rounded-full bg-white border-2 border-slate-300 text-[#071B49] hover:border-[#239B35] hover:text-[#239B35] font-black text-base transition-all flex items-center justify-center gap-2"
+              className="px-6 py-4 rounded-full bg-white border-2 border-[#25D366]/40 text-[#071B49] hover:border-[#25D366] hover:text-[#25D366] font-black text-base transition-all flex items-center justify-center gap-2.5 shadow-sm"
             >
-              <MessageCircle className="w-4 h-4 text-[#239B35]" />
+              <WhatsAppLogo className="w-5 h-5 shrink-0" />
               <span>Chat on WhatsApp</span>
             </a>
           </div>

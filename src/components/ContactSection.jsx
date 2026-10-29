@@ -14,6 +14,7 @@ import {
   Landmark,
   ChevronDown,
 } from 'lucide-react';
+import { WhatsAppLogo, PhoneDialerLogo, GmailLogo, GoogleMapsLogo } from './BrandLogos';
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -144,7 +145,9 @@ export default function ContactSection() {
 
                 {/* City / District */}
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <GoogleMapsLogo className="w-4 h-4" />
+                  </div>
                   <select
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -175,7 +178,9 @@ export default function ContactSection() {
 
                 {/* Phone */}
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <PhoneDialerLogo className="w-4 h-4" />
+                  </div>
                   <input
                     type="tel"
                     required
@@ -195,7 +200,9 @@ export default function ContactSection() {
 
                 {/* Email */}
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <GmailLogo className="w-4 h-4" />
+                  </div>
                   <input
                     type="email"
                     required
@@ -241,6 +248,39 @@ export default function ContactSection() {
                 </button>
 
               </form>
+
+            </div>
+
+            {/* Quick direct contact with Official Logos */}
+            <div className="mt-8 pt-6 border-t border-slate-200">
+              <div className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3 text-center sm:text-left">
+                Or Connect Directly with Us:
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <a
+                  href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20want%20to%20discuss%20a%20solar%20rooftop%20project."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#25D366]/10 border border-[#25D366]/40 hover:bg-[#25D366] text-[#071B49] hover:text-white text-xs font-black transition-all shadow-sm group"
+                >
+                  <WhatsAppLogo className="w-4 h-4 shrink-0" />
+                  <span>WhatsApp Chat</span>
+                </a>
+                <a
+                  href="tel:+919600281759"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#00AAEE]/10 border border-[#00AAEE]/40 hover:bg-[#00AAEE] text-[#071B49] hover:text-white text-xs font-black transition-all shadow-sm group"
+                >
+                  <PhoneDialerLogo className="w-4 h-4 shrink-0" />
+                  <span>+91 96002 81759</span>
+                </a>
+                <a
+                  href="mailto:solararise1@gmail.com?subject=Direct%20Inquiry%20from%20Website"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 border border-slate-300 hover:bg-slate-200 text-[#071B49] text-xs font-black transition-all shadow-sm group"
+                >
+                  <GmailLogo className="w-4 h-4 shrink-0" />
+                  <span>solararise1@gmail.com</span>
+                </a>
+              </div>
             </div>
 
           </div>

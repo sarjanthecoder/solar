@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import SolarCanvas from './SolarCanvas';
 import SolarBadge from './SolarBadge';
+import { PhoneDialerLogo } from './BrandLogos';
 
 export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
   // Motion values for subtle 3D parallax on mouse move
@@ -269,7 +270,7 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
           className="group btn-glass-secondary py-2.5 sm:py-3.5 px-4 sm:px-7 rounded-full font-bold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#0866C6]/25 shadow-xl bg-white/95 flex-1 sm:flex-initial"
           aria-label="Talk to an Expert"
         >
-          <PhoneCall className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0866C6] transition-transform duration-300 group-hover:rotate-12" />
+          <PhoneDialerLogo className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
           <span>Talk to Expert</span>
         </button>
       </div>

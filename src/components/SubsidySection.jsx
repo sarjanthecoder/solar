@@ -16,6 +16,7 @@ import {
   Send,
   MessageCircle,
 } from 'lucide-react';
+import { WhatsAppLogo, PhoneDialerLogo } from './BrandLogos';
 
 export default function SubsidySection({ onOpenQuoteModal, onOpenExpertModal }) {
   const [openFaq, setOpenFaq] = useState(0);
@@ -558,17 +559,17 @@ export default function SubsidySection({ onOpenQuoteModal, onOpenExpertModal }) 
                         href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20Commercial%20/%20Industrial%20Solar%20Solutions."
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full py-3.5 px-4 rounded-xl bg-[#239B35] hover:bg-[#1a7a28] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+                        className="w-full py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
                       >
-                        <MessageCircle className="w-4 h-4 fill-white" />
+                        <WhatsAppLogo className="w-5 h-5 shrink-0" />
                         <span>WhatsApp Advisory / ஆலோசனை</span>
                       </a>
                       <a
                         href="tel:+919600281759"
                         className="w-full py-3 px-4 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
                       >
-                        <Send className="w-4 h-4 text-[#70D943]" />
-                        <span>+91 96002 81759</span>
+                        <PhoneDialerLogo className="w-5 h-5 shrink-0" />
+                        <span>Call +91 96002 81759</span>
                       </a>
                     </div>
                   </div>

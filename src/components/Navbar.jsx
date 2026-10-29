@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Menu, X, ArrowUpRight, PhoneCall } from 'lucide-react';
 import SolarAriseLogo from './SolarAriseLogo';
+import { WhatsAppLogo, PhoneDialerLogo } from './BrandLogos';
 
 const NAV_LINKS = [
   { name: 'Home',          href: '#home',          id: 'home' },
@@ -202,9 +203,9 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                 rel="noopener noreferrer"
                 aria-label="Chat on WhatsApp"
                 title="Chat with Solar Specialist on WhatsApp"
-                className="hidden sm:flex p-2 rounded-full bg-white text-[#239B35] border border-[#239B35]/30 hover:bg-[#239B35] hover:text-white hover:border-[#239B35] shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#239B35]"
+                className="hidden sm:flex p-1.5 rounded-full bg-white text-[#25D366] border border-[#25D366]/40 hover:bg-[#25D366]/10 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#25D366]"
               >
-                <MessageCircle className="w-4 h-4" />
+                <WhatsAppLogo className="w-5 h-5 shrink-0" />
                 <span className="sr-only">WhatsApp</span>
               </a>
 
@@ -327,9 +328,9 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                     href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20a%20solar%20solution."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-2.5 bg-white border border-[#239B35]/40 text-[#239B35] hover:bg-[#EAF8EE] text-sm font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
+                    className="w-full py-2.5 bg-white border border-[#25D366]/50 text-[#071B49] hover:bg-[#EAF8EE] text-sm font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
                   >
-                    <MessageCircle className="w-4 h-4" />
+                    <WhatsAppLogo className="w-5 h-5 shrink-0" />
                     <span>WhatsApp Direct Chat</span>
                   </a>
 
@@ -342,7 +343,7 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                       }}
                       className="w-full py-2 bg-slate-50 border border-slate-200 text-slate-700 hover:text-[#0F1F5C] text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <PhoneCall className="w-3.5 h-3.5 text-[#0866C6]" />
+                      <PhoneDialerLogo className="w-4 h-4 shrink-0" />
                       <span>Speak with Solar Engineer</span>
                     </button>
                   )}

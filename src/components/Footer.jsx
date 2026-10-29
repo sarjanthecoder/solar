@@ -14,6 +14,7 @@ import {
   Landmark,
 } from 'lucide-react';
 import SolarAriseLogo from './SolarAriseLogo';
+import { WhatsAppLogo, GmailLogo, PhoneDialerLogo, GoogleMapsLogo } from './BrandLogos';
 
 const NAV = [
   { label: 'Home',                href: '#home' },
@@ -116,50 +117,47 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               across Tamil Nadu since 2014. MNRE &amp; TANGEDCO empanelled EPC contractor.
             </p>
 
-            {/* Quick-dial pills — Workable Glass Pills */}
+            {/* Quick-dial pills — Official Brand Logos */}
             <div className="flex flex-wrap gap-2.5 pt-1">
               {[
                 {
-                  label: 'WA',
+                  label: 'WhatsApp',
                   href: 'https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20solar%20rooftop%20solutions%20and%20government%20subsidy.',
-                  color: '#25D366',
                   title: 'Chat with Solar Specialist on WhatsApp',
+                  Logo: WhatsAppLogo,
+                  style: 'bg-[#25D366]/20 border-[#25D366]/50 hover:bg-[#25D366] text-white',
                 },
                 {
-                  label: 'CALL',
+                  label: 'Call Us',
                   href: 'tel:+919600281759',
-                  color: '#00AAEE',
                   title: 'Call Director T. Kathirvel (+91 96002 81759)',
+                  Logo: PhoneDialerLogo,
+                  style: 'bg-[#00AAEE]/20 border-[#00AAEE]/50 hover:bg-[#00AAEE] text-white',
                 },
                 {
-                  label: 'MAIL',
+                  label: 'Gmail',
                   href: 'mailto:solararise1@gmail.com?subject=Solar%20Inquiry%20from%20Website',
-                  color: '#E53935',
                   title: 'Email solararise1@gmail.com',
+                  Logo: GmailLogo,
+                  style: 'bg-white/10 border-white/25 hover:bg-white/20 text-white',
                 },
                 {
-                  label: 'DIR',
+                  label: 'Maps',
                   href: 'https://www.google.com/maps/dir/?api=1&destination=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476',
-                  color: '#70D943',
                   title: 'Get Turn-by-Turn GPS Directions on Google Maps',
+                  Logo: GoogleMapsLogo,
+                  style: 'bg-white/10 border-white/25 hover:bg-white/20 text-white',
                 },
-              ].map(({ label, href, color, title }) => (
+              ].map(({ label, href, title, Logo, style }) => (
                 <a
                   key={label}
                   href={href}
                   target={href.startsWith('http') ? '_blank' : undefined}
                   rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   title={title}
-                  className="px-4 py-2 rounded-full border border-white/20 bg-white/10 text-xs font-black tracking-widest text-white hover:text-white transition-all duration-200 shadow-sm cursor-pointer inline-flex items-center gap-1 active:scale-95"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = color;
-                    e.currentTarget.style.borderColor = color;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                  }}
+                  className={`px-3.5 py-2 rounded-full border text-xs font-bold transition-all duration-200 shadow-sm cursor-pointer inline-flex items-center gap-2 active:scale-95 ${style}`}
                 >
+                  <Logo className="w-4 h-4 shrink-0" />
                   <span>{label}</span>
                 </a>
               ))}
@@ -232,7 +230,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               
               {/* Address with Google Maps link */}
               <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-[#70D943] mt-1 shrink-0" />
+                <GoogleMapsLogo className="w-5 h-5 shrink-0 mt-0.5" />
                 <a
                   href="https://www.google.com/maps/search/?api=1&query=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476"
                   target="_blank"
@@ -245,32 +243,46 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
                 </a>
               </div>
 
-              {/* Phone Numbers */}
+              {/* Phone Numbers with Call & WhatsApp Badges */}
               <div className="flex items-start gap-3">
-                <Phone className="w-4 h-4 text-[#00AAEE] mt-1 shrink-0" />
-                <div className="flex flex-col gap-1.5">
-                  <a
-                    href="tel:+919600281759"
-                    title="Call Primary Contact"
-                    className="font-extrabold text-white hover:text-[#70D943] transition-colors text-base inline-flex items-center gap-2"
-                  >
-                    <span>+91 96002 81759</span>
+                <PhoneDialerLogo className="w-5 h-5 shrink-0 mt-0.5" />
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center flex-wrap gap-2">
+                    <a
+                      href="tel:+919600281759"
+                      title="Call Primary Contact"
+                      className="font-extrabold text-white hover:text-[#70D943] transition-colors text-base"
+                    >
+                      +91 96002 81759
+                    </a>
+                    <a
+                      href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20solar%20rooftop%20solutions."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Chat on WhatsApp"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] hover:bg-[#25D366] hover:text-white text-[10px] font-black transition-colors"
+                    >
+                      <WhatsAppLogo className="w-3 h-3" />
+                      <span>WhatsApp</span>
+                    </a>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-[#239B35]/25 border border-[#239B35]/50 text-[#70D943] font-black uppercase">Primary</span>
-                  </a>
-                  <a
-                    href="tel:+919789281759"
-                    title="Call Alternate Contact"
-                    className="font-bold text-slate-200 hover:text-[#70D943] transition-colors inline-flex items-center gap-2"
-                  >
-                    <span>+91 97892 81759</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="tel:+919789281759"
+                      title="Call Alternate Contact"
+                      className="font-bold text-slate-200 hover:text-[#70D943] transition-colors"
+                    >
+                      +91 97892 81759
+                    </a>
                     <span className="text-[9px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-bold uppercase">Alternate</span>
-                  </a>
+                  </div>
                 </div>
               </div>
 
-              {/* Email */}
+              {/* Email with Gmail Logo */}
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#E53935] shrink-0" />
+                <GmailLogo className="w-5 h-5 shrink-0" />
                 <a
                   href="mailto:solararise1@gmail.com?subject=Inquiry%20from%20Solar%20Arise%20Website"
                   title="Send email to solararise1@gmail.com"
@@ -313,7 +325,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
                   title="Call 24/7 Helpline (+91 96002 81759)"
                   className="text-xs font-black text-[#70D943] hover:text-white uppercase tracking-wider flex items-center gap-2 transition-colors group cursor-pointer"
                 >
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#70D943] animate-pulse" />
+                  <PhoneDialerLogo className="w-4 h-4 shrink-0" />
                   <span>24/7 Helpline: 96002 81759</span>
                 </a>
               </div>
