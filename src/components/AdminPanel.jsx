@@ -4,19 +4,16 @@ import {
   Lock, LogOut, Plus, Trash2, Edit3, Eye, EyeOff, X, Upload, Save,
   Image as ImageIcon, AlertTriangle, CheckCircle, Building2, Home,
   Factory, FolderOpen, MapPin, RefreshCw, ArrowLeft, ChevronRight,
-  Settings, Cloud, Globe, ExternalLink, Loader2, Sparkles, Check
+  Cloud, Loader2
 } from 'lucide-react';
 import SolarAriseLogo from './SolarAriseLogo';
-import { uploadToCloudinary } from '../lib/cloudinary';
-import { readProjects, writeProjects } from '../lib/githubApi';
+import { uploadToCloudinary, isCloudinaryConfigured } from '../lib/cloudinary';
 
 /* ─────────────────────────────────────────────
    CONSTANTS
 ───────────────────────────────────────────── */
 const ADMIN_PASSWORD = 'kathir@123';
 const STORAGE_KEY = 'solar_admin_projects';
-const CLOUDINARY_KEY = 'solar_cloudinary_config';
-const GITHUB_TOKEN_KEY = 'solar_github_token';
 
 const CATEGORY_OPTIONS = [
   { value: 'residential', label: 'Residential', Icon: Home,     color: '#239B35', lightBg: '#EAF8EE' },
@@ -55,15 +52,6 @@ function saveAdminProjects(projects) {
       storageArea: localStorage,
     }));
   } catch (_) {}
-}
-
-function getStoredCloudinary() {
-  try {
-    const raw = localStorage.getItem(CLOUDINARY_KEY);
-    return raw ? JSON.parse(raw) : { cloudName: '', uploadPreset: '' };
-  } catch {
-    return { cloudName: '', uploadPreset: '' };
-  }
 }
 
 /* ─────────────────────────────────────────────
@@ -142,13 +130,10 @@ export default function AdminPanel({ isOpen, onClose }) {
   const [isSaving, setIsSaving]           = useState(false);
   const [toast, setToast]                 = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  const [tab, setTab]                     = useState('projects'); // 'projects' | 'add' | 'settings'
+  const [tab, setTab]                     = useState('projects'); // 'projects' | 'add'
   const fileRef                           = useRef(null);
 
-  // Cloudinary Config state
-  const [cloudinary, setCloudinary]       = useState(getStoredCloudinary);
-  const [githubToken, setGithubToken]     = useState(() => localStorage.getItem(GITHUB_TOKEN_KEY) || '');
-  const [isTestingCloud, setIsTestingCloud] = useState(false);
+  const hasCloudinaryEnv = isCloudinaryConfigured();
 
   useEffect(() => {
     if (isOpen) setProjects(getAdminProjects());
@@ -194,7 +179,7 @@ export default function AdminPanel({ isOpen, onClose }) {
     window.location.reload();
   };
 
-  /* ── Image Upload with Cloudinary ── */
+  /* ── Direct Image Upload via Cloudinary API (from .env) ── */
   const handleImageFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -204,19 +189,15 @@ export default function AdminPanel({ isOpen, onClose }) {
       return;
     }
 
-    // Immediate local preview so user sees it right away
+    // Immediate local preview so the admin sees the selected photo right away
     const localUrl = URL.createObjectURL(file);
     setPreviewImg(localUrl);
 
-    // If Cloudinary is configured, upload directly to Cloudinary CDN
-    if (cloudinary.cloudName.trim() && cloudinary.uploadPreset.trim()) {
+    // If Cloudinary is configured via .env / Vercel env, upload to Cloudinary CDN
+    if (hasCloudinaryEnv) {
       setIsUploading(true);
       try {
-        const cloudUrl = await uploadToCloudinary(
-          file,
-          cloudinary.cloudName.trim(),
-          cloudinary.uploadPreset.trim()
-        );
+        const cloudUrl = await uploadToCloudinary(file);
         setForm((f) => ({ ...f, image: cloudUrl }));
         setPreviewImg(cloudUrl);
         showToast('Image uploaded to Cloudinary CDN! ☁️', 'success');
@@ -232,56 +213,18 @@ export default function AdminPanel({ isOpen, onClose }) {
         setIsUploading(false);
       }
     } else {
-      // No Cloudinary credentials yet: read as local base64 and advise user
+      // Local dev / no env set: read as base64
       const reader = new FileReader();
       reader.onload = (ev) => {
         setForm((f) => ({ ...f, image: ev.target.result }));
         setPreviewImg(ev.target.result);
       };
       reader.readAsDataURL(file);
-      showToast('Image selected. Configure Cloudinary in Settings for fast CDN hosting.', 'success');
+      showToast('Image selected locally. (Add VITE_CLOUDINARY_* in .env / Vercel for CDN)', 'success');
     }
   };
 
   const handleField = (name, value) => setForm((f) => ({ ...f, [name]: value }));
-
-  /* ── Save Cloudinary & GitHub Settings ── */
-  const handleSaveSettings = () => {
-    localStorage.setItem(CLOUDINARY_KEY, JSON.stringify(cloudinary));
-    if (githubToken) {
-      localStorage.setItem(GITHUB_TOKEN_KEY, githubToken.trim());
-    } else {
-      localStorage.removeItem(GITHUB_TOKEN_KEY);
-    }
-    showToast('Settings saved successfully!');
-  };
-
-  /* ── Test Cloudinary Connection ── */
-  const handleTestCloudinary = async () => {
-    if (!cloudinary.cloudName.trim() || !cloudinary.uploadPreset.trim()) {
-      showToast('Please enter both Cloud Name and Upload Preset.', 'error');
-      return;
-    }
-    setIsTestingCloud(true);
-    try {
-      // Create a tiny 10x10 colored canvas blob to test upload
-      const canvas = document.createElement('canvas');
-      canvas.width = 10; canvas.height = 10;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#239B35'; ctx.fillRect(0, 0, 10, 10);
-      const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg'));
-      const testFile = new File([blob], 'test.jpg', { type: 'image/jpeg' });
-
-      const url = await uploadToCloudinary(testFile, cloudinary.cloudName.trim(), cloudinary.uploadPreset.trim());
-      if (url) {
-        showToast('✅ Cloudinary connected successfully! Test upload worked.', 'success');
-      }
-    } catch (err) {
-      showToast(`❌ Cloudinary test failed: ${err.message}`, 'error');
-    } finally {
-      setIsTestingCloud(false);
-    }
-  };
 
   /* ── Validate ── */
   const getMissing = () => {
@@ -296,7 +239,7 @@ export default function AdminPanel({ isOpen, onClose }) {
   };
 
   /* ── Save Project ── */
-  const handleSave = async () => {
+  const handleSave = () => {
     const missing = getMissing();
     if (missing.length > 0) { showToast(`Missing: ${missing.join(', ')}`, 'error'); return; }
 
@@ -310,6 +253,7 @@ export default function AdminPanel({ isOpen, onClose }) {
           ? { ...p, ...form, categoryLabel: catInfo?.label ?? form.category, image: form.image || p.image }
           : p
       );
+      showToast('Project updated successfully!');
     } else {
       updated = [...projects, {
         ...form,
@@ -319,24 +263,11 @@ export default function AdminPanel({ isOpen, onClose }) {
         alt: form.title,
         isAdmin: true,
       }];
+      showToast('Project published to website!');
     }
 
-    // Save locally
     saveAdminProjects(updated);
     setProjects(updated);
-
-    // If GitHub token is present, sync with GitHub repo -> triggers automatic Vercel deploy!
-    if (githubToken.trim()) {
-      try {
-        const { sha } = await readProjects(githubToken.trim());
-        await writeProjects(githubToken.trim(), updated, sha);
-        showToast('Published & Synced to GitHub! Vercel is auto-deploying 🚀');
-      } catch (err) {
-        showToast(`Saved locally. (GitHub sync: ${err.message})`, 'success');
-      }
-    } else {
-      showToast(editId ? 'Project updated successfully!' : 'Project published to website!');
-    }
 
     setIsSaving(false);
     resetForm();
@@ -344,20 +275,11 @@ export default function AdminPanel({ isOpen, onClose }) {
   };
 
   /* ── Delete ── */
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     const updated = projects.filter((p) => p.id !== id);
     saveAdminProjects(updated);
     setProjects(updated);
     setConfirmDelete(null);
-
-    if (githubToken.trim()) {
-      try {
-        const { sha } = await readProjects(githubToken.trim());
-        await writeProjects(githubToken.trim(), updated, sha);
-        showToast('Project deleted & synced with GitHub/Vercel.');
-        return;
-      } catch (_) {}
-    }
     showToast('Project removed.');
   };
 
@@ -385,7 +307,6 @@ export default function AdminPanel({ isOpen, onClose }) {
 
   const missing = getMissing();
   const isReady = missing.length === 0 && !isUploading;
-  const isCloudinaryActive = Boolean(cloudinary.cloudName.trim() && cloudinary.uploadPreset.trim());
 
   return (
     <AnimatePresence>
@@ -507,20 +428,15 @@ export default function AdminPanel({ isOpen, onClose }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Cloudinary Status Indicator */}
-                  <button
-                    onClick={() => setTab('settings')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black border transition-all ${
-                      isCloudinaryActive
-                        ? 'bg-[#EBF2FF] text-[#0866C6] border-[#0866C6]/30'
-                        : 'bg-amber-50 text-amber-700 border-amber-200'
-                    }`}
-                  >
+                  {/* Cloudinary CDN Indicator badge (reads automatically from env) */}
+                  <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black border ${
+                    hasCloudinaryEnv
+                      ? 'bg-[#EBF2FF] text-[#0866C6] border-[#0866C6]/30'
+                      : 'bg-slate-50 text-slate-500 border-slate-200'
+                  }`}>
                     <Cloud className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">
-                      {isCloudinaryActive ? 'Cloudinary: Connected' : 'Cloudinary: Setup'}
-                    </span>
-                  </button>
+                    <span>{hasCloudinaryEnv ? 'Cloudinary CDN: Active' : 'Local Storage Mode'}</span>
+                  </div>
 
                   {/* Back to Main Site */}
                   <button
@@ -543,11 +459,10 @@ export default function AdminPanel({ isOpen, onClose }) {
               </div>
 
               {/* ── TAB BAR ── */}
-              <div className="shrink-0 flex items-center gap-1 px-4 sm:px-6 bg-white border-b-2 border-slate-200 overflow-x-auto">
+              <div className="shrink-0 flex items-center gap-1 px-4 sm:px-6 bg-white border-b-2 border-slate-200">
                 {[
                   { id: 'projects', label: `Projects (${projects.length})`, Icon: FolderOpen },
                   { id: 'add',      label: editId ? '✏ Edit Project' : '+ Add Project', Icon: Plus },
-                  { id: 'settings', label: '☁ Cloudinary & Vercel Settings', Icon: Settings },
                 ].map(({ id, label, Icon }) => (
                   <button
                     key={id}
@@ -577,16 +492,14 @@ export default function AdminPanel({ isOpen, onClose }) {
                           {projects.length} project{projects.length !== 1 ? 's' : ''} published to website
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => { resetForm(); setTab('add'); }}
-                          className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-[#0866C6] to-[#239B35] text-white font-black text-xs sm:text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
-                        >
-                          <Plus className="w-4 h-4" />
-                          <span className="hidden sm:inline">Add New Project</span>
-                          <span className="sm:hidden">Add</span>
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => { resetForm(); setTab('add'); }}
+                        className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-[#0866C6] to-[#239B35] text-white font-black text-xs sm:text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span className="hidden sm:inline">Add New Project</span>
+                        <span className="sm:hidden">Add</span>
+                      </button>
                     </div>
 
                     {projects.length === 0 ? (
@@ -685,9 +598,9 @@ export default function AdminPanel({ isOpen, onClose }) {
                           {editId ? '✏️ Edit Project' : '🚀 Add New Project'}
                         </h2>
                         <p className="text-slate-500 text-xs sm:text-sm font-bold mt-0.5">
-                          {isCloudinaryActive
-                            ? 'Images are uploaded directly to Cloudinary CDN.'
-                            : 'Upload images locally or connect Cloudinary in Settings for CDN hosting.'}
+                          {hasCloudinaryEnv
+                            ? 'Images are automatically converted & hosted on Cloudinary CDN.'
+                            : 'Upload your project image and details below.'}
                         </p>
                       </div>
                       {editId && (
@@ -708,18 +621,10 @@ export default function AdminPanel({ isOpen, onClose }) {
                             <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider">
                               Project Image <span className="text-red-500">*</span>
                             </label>
-                            {isCloudinaryActive ? (
+                            {hasCloudinaryEnv && (
                               <span className="text-[10px] font-bold text-[#0866C6] bg-[#EBF2FF] px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <Cloud className="w-3 h-3" /> Cloudinary Active
+                                <Cloud className="w-3 h-3" /> Cloudinary CDN Active
                               </span>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => setTab('settings')}
-                                className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full hover:bg-amber-100"
-                              >
-                                ⚡ Setup Cloudinary
-                              </button>
                             )}
                           </div>
 
@@ -734,7 +639,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                               <div className="flex flex-col items-center justify-center h-full gap-3 bg-white/90">
                                 <Loader2 className="w-8 h-8 text-[#0866C6] animate-spin" />
                                 <p className="font-black text-sm text-[#071B49]">Uploading to Cloudinary CDN...</p>
-                                <p className="text-xs text-slate-400 font-semibold">Fast HTTPS CDN conversion</p>
+                                <p className="text-xs text-slate-400 font-semibold">Generating permanent image URL</p>
                               </div>
                             ) : previewImg ? (
                               <>
@@ -746,7 +651,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                                 </div>
                                 <div className="absolute top-3 right-3 px-3 py-1 rounded-xl bg-[#239B35] text-white text-xs font-black flex items-center gap-1 shadow-lg">
                                   <CheckCircle className="w-3.5 h-3.5" />
-                                  <span>{form.image && form.image.includes('cloudinary') ? 'Cloud CDN' : 'Ready'}</span>
+                                  <span>{form.image && form.image.includes('cloudinary') ? 'CDN Hosted' : 'Ready'}</span>
                                 </div>
                               </>
                             ) : (
@@ -756,7 +661,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                                 </div>
                                 <div className="text-center">
                                   <p className="font-black text-sm text-slate-600">Click to Upload Image</p>
-                                  <p className="text-xs text-slate-400 font-bold mt-0.5">JPG, PNG, WEBP (Auto Cloudinary CDN)</p>
+                                  <p className="text-xs text-slate-400 font-bold mt-0.5">JPG, PNG, WEBP</p>
                                 </div>
                               </div>
                             )}
@@ -840,7 +745,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                           <CheckCircle className="w-5 h-5 shrink-0" />
                           <p className="text-xs font-black">
                             All required fields filled — ready to publish!
-                            {githubToken.trim() && ' (Will also sync with GitHub & Vercel)'}
                           </p>
                         </div>
                       )}
@@ -878,152 +782,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                         </button>
                       </div>
                     </div>
-                  </div>
-                )}
-
-                {/* ══ 3. SETTINGS TAB (Cloudinary & Vercel Sync) ══ */}
-                {tab === 'settings' && (
-                  <div className="p-4 sm:p-6 max-w-4xl mx-auto pb-16 space-y-8">
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-black text-[#071B49]">Cloudinary & Production Sync</h2>
-                      <p className="text-slate-500 text-xs sm:text-sm font-bold mt-1">
-                        Connect Cloudinary to store images on a high-speed CDN, and optionally sync with GitHub/Vercel.
-                      </p>
-                    </div>
-
-                    {/* Cloudinary Section */}
-                    <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-slate-200 shadow-md space-y-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-2xl bg-[#EBF2FF] border border-[#0866C6]/20 flex items-center justify-center text-[#0866C6]">
-                            <Cloud className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-black text-[#071B49]">Cloudinary Image Storage</h3>
-                            <p className="text-xs font-semibold text-slate-500">Free 25 GB monthly storage & global CDN</p>
-                          </div>
-                        </div>
-                        <a
-                          href="https://cloudinary.com/users/register_free"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-colors"
-                        >
-                          <span>Get Free Account</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider block mb-1.5">
-                            Cloudinary Cloud Name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={cloudinary.cloudName}
-                            onChange={(e) => setCloudinary({ ...cloudinary, cloudName: e.target.value.trim() })}
-                            placeholder="e.g. dxyz123abc"
-                            className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-[#0866C6] focus:ring-4 focus:ring-[#0866C6]/10 outline-none text-sm font-bold text-[#071B49] bg-slate-50"
-                          />
-                          <p className="text-[10px] text-slate-400 font-semibold mt-1">Found on Cloudinary Dashboard</p>
-                        </div>
-
-                        <div>
-                          <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider block mb-1.5">
-                            Upload Preset (Unsigned) <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            value={cloudinary.uploadPreset}
-                            onChange={(e) => setCloudinary({ ...cloudinary, uploadPreset: e.target.value.trim() })}
-                            placeholder="e.g. solar_arise_preset"
-                            className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-[#0866C6] focus:ring-4 focus:ring-[#0866C6]/10 outline-none text-sm font-bold text-[#071B49] bg-slate-50"
-                          />
-                          <p className="text-[10px] text-slate-400 font-semibold mt-1">Settings → Upload → Add Upload Preset (Signing: Unsigned)</p>
-                        </div>
-                      </div>
-
-                      {/* Cloudinary Step-by-Step Guide */}
-                      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 space-y-2">
-                        <p className="font-black text-[#071B49] text-xs">📖 1-Minute Setup Guide:</p>
-                        <ol className="list-decimal list-inside space-y-1 text-slate-500">
-                          <li>Go to <a href="https://cloudinary.com" target="_blank" rel="noopener noreferrer" className="text-[#0866C6] font-bold underline">cloudinary.com</a> and sign in / register free.</li>
-                          <li>Copy your <strong>Cloud Name</strong> from the Dashboard home.</li>
-                          <li>Go to <strong>Settings (Gear icon) → Upload Presets → Add upload preset</strong>.</li>
-                          <li>Change <strong>Signing Mode</strong> to <strong>Unsigned</strong>, name it (e.g. <code>solar_arise</code>), and click <strong>Save</strong>.</li>
-                        </ol>
-                      </div>
-
-                      <div className="flex items-center gap-3 pt-2">
-                        <button
-                          type="button"
-                          onClick={handleSaveSettings}
-                          className="px-6 py-3 rounded-2xl bg-[#0866C6] hover:bg-[#0756a8] text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all"
-                        >
-                          <Save className="w-4 h-4" />
-                          <span>Save Settings</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={handleTestCloudinary}
-                          disabled={isTestingCloud}
-                          className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 text-[#071B49] font-black text-xs sm:text-sm flex items-center gap-2 transition-all"
-                        >
-                          {isTestingCloud ? (
-                            <>
-                              <Loader2 className="w-4 h-4 animate-spin text-[#0866C6]" />
-                              <span>Testing...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-4 h-4 text-[#239B35]" />
-                              <span>Test Connection</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* GitHub & Vercel Sync Section (Optional) */}
-                    <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-slate-200 shadow-md space-y-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-[#EAF8EE] border border-[#239B35]/20 flex items-center justify-center text-[#239B35]">
-                          <Globe className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-black text-[#071B49]">Auto-Deploy with Vercel (Optional)</h3>
-                          <p className="text-xs font-semibold text-slate-500">Commits project list to GitHub repo automatically</p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider block mb-1.5">
-                          GitHub Personal Access Token (PAT)
-                        </label>
-                        <input
-                          type="password"
-                          value={githubToken}
-                          onChange={(e) => setGithubToken(e.target.value)}
-                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                          className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-[#239B35] focus:ring-4 focus:ring-[#239B35]/10 outline-none text-sm font-bold text-[#071B49] bg-slate-50"
-                        />
-                        <p className="text-[10px] text-slate-400 font-semibold mt-1">
-                          Optional: If entered, every published project auto-commits to your GitHub repo, triggering an automatic Vercel build!
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleSaveSettings}
-                        className="px-6 py-3 rounded-2xl bg-[#239B35] hover:bg-[#1f872e] text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all"
-                      >
-                        <Save className="w-4 h-4" />
-                        <span>Save GitHub Token</span>
-                      </button>
-                    </div>
-
                   </div>
                 )}
 
