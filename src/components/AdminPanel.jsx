@@ -43,6 +43,14 @@ export function getAdminProjects() {
 
 function saveAdminProjects(projects) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  // Dispatch storage event so ProjectsSection on main page updates instantly
+  try {
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: STORAGE_KEY,
+      newValue: JSON.stringify(projects),
+      storageArea: localStorage,
+    }));
+  } catch (_) {}
 }
 
 /* ─────────────────────────────────────────────
@@ -112,11 +120,13 @@ function Toast({ toast }) {
    MAIN ADMIN PANEL
 ───────────────────────────────────────────── */
 export default function AdminPanel({ isOpen, onClose }) {
-  const [authed, setAuthed]               = useState(false);
+  // Persist auth session within the browser tab (sessionStorage)
+  const [authed, setAuthed]               = useState(() => sessionStorage.getItem('solar_admin_authed') === '1');
   const [pwInput, setPwInput]             = useState('');
   const [pwError, setPwError]             = useState('');
   const [showPw, setShowPw]               = useState(false);
-  const [projects, setProjects]           = useState([]);
+  // Load projects immediately from localStorage — no waiting for auth
+  const [projects, setProjects]           = useState(() => getAdminProjects());
   const [editId, setEditId]               = useState(null);
   const [form, setForm]                   = useState(EMPTY_FORM);
   const [previewImg, setPreviewImg]       = useState(null);
@@ -125,7 +135,15 @@ export default function AdminPanel({ isOpen, onClose }) {
   const [tab, setTab]                     = useState('projects');
   const fileRef                           = useRef(null);
 
-  useEffect(() => { if (authed) setProjects(getAdminProjects()); }, [authed]);
+  // Reload from localStorage whenever admin panel opens (catches external changes)
+  useEffect(() => {
+    if (isOpen) setProjects(getAdminProjects());
+  }, [isOpen]);
+
+  // Also reload on auth (after login)
+  useEffect(() => {
+    if (authed) setProjects(getAdminProjects());
+  }, [authed]);
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
@@ -142,16 +160,24 @@ export default function AdminPanel({ isOpen, onClose }) {
   const handleLogin = (e) => {
     e.preventDefault();
     if (pwInput === ADMIN_PASSWORD) {
-      setAuthed(true); setPwError(''); setPwInput('');
+      setAuthed(true);
+      sessionStorage.setItem('solar_admin_authed', '1');
+      setPwError(''); setPwInput('');
     } else {
       setPwError('Incorrect password. Please try again.'); setPwInput('');
     }
   };
 
-  const handleLogout = () => { setAuthed(false); setPwInput(''); onClose(); };
+  const handleLogout = () => {
+    setAuthed(false);
+    sessionStorage.removeItem('solar_admin_authed');
+    setPwInput(''); onClose();
+  };
 
   const handleBackToSite = () => {
-    setAuthed(false); setPwInput(''); onClose();
+    setAuthed(false);
+    sessionStorage.removeItem('solar_admin_authed');
+    setPwInput(''); onClose();
     window.location.reload();
   };
 
