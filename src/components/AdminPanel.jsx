@@ -3,15 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Lock, LogOut, Plus, Trash2, Edit3, Eye, EyeOff, X, Upload, Save,
   Image as ImageIcon, AlertTriangle, CheckCircle, Building2, Home,
-  Factory, FolderOpen, MapPin, RefreshCw, ArrowLeft, ChevronRight
+  Factory, FolderOpen, MapPin, RefreshCw, ArrowLeft, ChevronRight,
+  Settings, Cloud, Globe, ExternalLink, Loader2, Sparkles, Check
 } from 'lucide-react';
 import SolarAriseLogo from './SolarAriseLogo';
+import { uploadToCloudinary } from '../lib/cloudinary';
+import { readProjects, writeProjects } from '../lib/githubApi';
 
 /* ─────────────────────────────────────────────
    CONSTANTS
 ───────────────────────────────────────────── */
 const ADMIN_PASSWORD = 'kathir@123';
 const STORAGE_KEY = 'solar_admin_projects';
+const CLOUDINARY_KEY = 'solar_cloudinary_config';
+const GITHUB_TOKEN_KEY = 'solar_github_token';
 
 const CATEGORY_OPTIONS = [
   { value: 'residential', label: 'Residential', Icon: Home,     color: '#239B35', lightBg: '#EAF8EE' },
@@ -22,7 +27,7 @@ const CATEGORY_OPTIONS = [
 const EMPTY_FORM = {
   title: '', description: '', location: '', category: 'residential',
   capacity: '', annualSavings: '', panels: '', co2Offset: '',
-  completionDate: '', imageBase64: '',
+  completionDate: '', image: '',
 };
 
 const LIMITS = {
@@ -43,7 +48,6 @@ export function getAdminProjects() {
 
 function saveAdminProjects(projects) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-  // Dispatch storage event so ProjectsSection on main page updates instantly
   try {
     window.dispatchEvent(new StorageEvent('storage', {
       key: STORAGE_KEY,
@@ -53,8 +57,17 @@ function saveAdminProjects(projects) {
   } catch (_) {}
 }
 
+function getStoredCloudinary() {
+  try {
+    const raw = localStorage.getItem(CLOUDINARY_KEY);
+    return raw ? JSON.parse(raw) : { cloudName: '', uploadPreset: '' };
+  } catch {
+    return { cloudName: '', uploadPreset: '' };
+  }
+}
+
 /* ─────────────────────────────────────────────
-   CHAR COUNTER
+   CHAR COUNTER & FIELD
 ───────────────────────────────────────────── */
 function CharCounter({ value = '', max }) {
   const pct = value.length / max;
@@ -62,9 +75,6 @@ function CharCounter({ value = '', max }) {
   return <span className={`text-[10px] font-black ml-auto ${color}`}>{value.length}/{max}</span>;
 }
 
-/* ─────────────────────────────────────────────
-   FIELD COMPONENT
-───────────────────────────────────────────── */
 function Field({ label, name, value = '', onChange, type = 'text', rows, required, placeholder }) {
   const max = LIMITS[name];
   const handleChange = (e) => {
@@ -89,7 +99,7 @@ function Field({ label, name, value = '', onChange, type = 'text', rows, require
 }
 
 /* ─────────────────────────────────────────────
-   TOAST (fixed, always visible)
+   TOAST
 ───────────────────────────────────────────── */
 function Toast({ toast }) {
   return (
@@ -120,27 +130,30 @@ function Toast({ toast }) {
    MAIN ADMIN PANEL
 ───────────────────────────────────────────── */
 export default function AdminPanel({ isOpen, onClose }) {
-  // Persist auth session within the browser tab (sessionStorage)
   const [authed, setAuthed]               = useState(() => sessionStorage.getItem('solar_admin_authed') === '1');
   const [pwInput, setPwInput]             = useState('');
   const [pwError, setPwError]             = useState('');
   const [showPw, setShowPw]               = useState(false);
-  // Load projects immediately from localStorage — no waiting for auth
   const [projects, setProjects]           = useState(() => getAdminProjects());
   const [editId, setEditId]               = useState(null);
   const [form, setForm]                   = useState(EMPTY_FORM);
   const [previewImg, setPreviewImg]       = useState(null);
+  const [isUploading, setIsUploading]     = useState(false);
+  const [isSaving, setIsSaving]           = useState(false);
   const [toast, setToast]                 = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  const [tab, setTab]                     = useState('projects');
+  const [tab, setTab]                     = useState('projects'); // 'projects' | 'add' | 'settings'
   const fileRef                           = useRef(null);
 
-  // Reload from localStorage whenever admin panel opens (catches external changes)
+  // Cloudinary Config state
+  const [cloudinary, setCloudinary]       = useState(getStoredCloudinary);
+  const [githubToken, setGithubToken]     = useState(() => localStorage.getItem(GITHUB_TOKEN_KEY) || '');
+  const [isTestingCloud, setIsTestingCloud] = useState(false);
+
   useEffect(() => {
     if (isOpen) setProjects(getAdminProjects());
   }, [isOpen]);
 
-  // Also reload on auth (after login)
   useEffect(() => {
     if (authed) setProjects(getAdminProjects());
   }, [authed]);
@@ -181,20 +194,94 @@ export default function AdminPanel({ isOpen, onClose }) {
     window.location.reload();
   };
 
-  /* ── Image ── */
-  const handleImageUpload = (e) => {
+  /* ── Image Upload with Cloudinary ── */
+  const handleImageFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5 MB.', 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setForm((f) => ({ ...f, imageBase64: ev.target.result }));
-      setPreviewImg(ev.target.result);
-    };
-    reader.readAsDataURL(file);
+
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Image must be under 10 MB.', 'error');
+      return;
+    }
+
+    // Immediate local preview so user sees it right away
+    const localUrl = URL.createObjectURL(file);
+    setPreviewImg(localUrl);
+
+    // If Cloudinary is configured, upload directly to Cloudinary CDN
+    if (cloudinary.cloudName.trim() && cloudinary.uploadPreset.trim()) {
+      setIsUploading(true);
+      try {
+        const cloudUrl = await uploadToCloudinary(
+          file,
+          cloudinary.cloudName.trim(),
+          cloudinary.uploadPreset.trim()
+        );
+        setForm((f) => ({ ...f, image: cloudUrl }));
+        setPreviewImg(cloudUrl);
+        showToast('Image uploaded to Cloudinary CDN! ☁️', 'success');
+      } catch (err) {
+        showToast(`Cloudinary upload failed: ${err.message}`, 'error');
+        // Fallback to base64
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setForm((f) => ({ ...f, image: ev.target.result }));
+        };
+        reader.readAsDataURL(file);
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      // No Cloudinary credentials yet: read as local base64 and advise user
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setForm((f) => ({ ...f, image: ev.target.result }));
+        setPreviewImg(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      showToast('Image selected. Configure Cloudinary in Settings for fast CDN hosting.', 'success');
+    }
   };
 
   const handleField = (name, value) => setForm((f) => ({ ...f, [name]: value }));
+
+  /* ── Save Cloudinary & GitHub Settings ── */
+  const handleSaveSettings = () => {
+    localStorage.setItem(CLOUDINARY_KEY, JSON.stringify(cloudinary));
+    if (githubToken) {
+      localStorage.setItem(GITHUB_TOKEN_KEY, githubToken.trim());
+    } else {
+      localStorage.removeItem(GITHUB_TOKEN_KEY);
+    }
+    showToast('Settings saved successfully!');
+  };
+
+  /* ── Test Cloudinary Connection ── */
+  const handleTestCloudinary = async () => {
+    if (!cloudinary.cloudName.trim() || !cloudinary.uploadPreset.trim()) {
+      showToast('Please enter both Cloud Name and Upload Preset.', 'error');
+      return;
+    }
+    setIsTestingCloud(true);
+    try {
+      // Create a tiny 10x10 colored canvas blob to test upload
+      const canvas = document.createElement('canvas');
+      canvas.width = 10; canvas.height = 10;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#239B35'; ctx.fillRect(0, 0, 10, 10);
+      const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg'));
+      const testFile = new File([blob], 'test.jpg', { type: 'image/jpeg' });
+
+      const url = await uploadToCloudinary(testFile, cloudinary.cloudName.trim(), cloudinary.uploadPreset.trim());
+      if (url) {
+        showToast('✅ Cloudinary connected successfully! Test upload worked.', 'success');
+      }
+    } catch (err) {
+      showToast(`❌ Cloudinary test failed: ${err.message}`, 'error');
+    } finally {
+      setIsTestingCloud(false);
+    }
+  };
 
   /* ── Validate ── */
   const getMissing = () => {
@@ -204,44 +291,73 @@ export default function AdminPanel({ isOpen, onClose }) {
     if (!form.location.trim())      m.push('Location');
     if (!form.capacity.trim())      m.push('Capacity');
     if (!form.annualSavings.trim()) m.push('Annual Savings');
-    if (!form.imageBase64 && !editId) m.push('Project Image');
+    if (!form.image && !previewImg && !editId) m.push('Project Image');
     return m;
   };
 
-  /* ── Save ── */
-  const handleSave = () => {
+  /* ── Save Project ── */
+  const handleSave = async () => {
     const missing = getMissing();
     if (missing.length > 0) { showToast(`Missing: ${missing.join(', ')}`, 'error'); return; }
+
+    setIsSaving(true);
     const catInfo = CATEGORY_OPTIONS.find((c) => c.value === form.category);
     let updated;
+
     if (editId) {
       updated = projects.map((p) =>
         p.id === editId
-          ? { ...p, ...form, categoryLabel: catInfo?.label ?? form.category, image: form.imageBase64 || p.image }
+          ? { ...p, ...form, categoryLabel: catInfo?.label ?? form.category, image: form.image || p.image }
           : p
       );
-      showToast('Project updated successfully!');
     } else {
       updated = [...projects, {
         ...form,
         id: `admin_${Date.now()}`,
         categoryLabel: catInfo?.label ?? form.category,
-        image: form.imageBase64, alt: form.title, isAdmin: true,
+        image: form.image || previewImg,
+        alt: form.title,
+        isAdmin: true,
       }];
-      showToast('Project published to website!');
     }
+
+    // Save locally
     saveAdminProjects(updated);
     setProjects(updated);
+
+    // If GitHub token is present, sync with GitHub repo -> triggers automatic Vercel deploy!
+    if (githubToken.trim()) {
+      try {
+        const { sha } = await readProjects(githubToken.trim());
+        await writeProjects(githubToken.trim(), updated, sha);
+        showToast('Published & Synced to GitHub! Vercel is auto-deploying 🚀');
+      } catch (err) {
+        showToast(`Saved locally. (GitHub sync: ${err.message})`, 'success');
+      }
+    } else {
+      showToast(editId ? 'Project updated successfully!' : 'Project published to website!');
+    }
+
+    setIsSaving(false);
     resetForm();
     setTab('projects');
   };
 
   /* ── Delete ── */
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const updated = projects.filter((p) => p.id !== id);
     saveAdminProjects(updated);
     setProjects(updated);
     setConfirmDelete(null);
+
+    if (githubToken.trim()) {
+      try {
+        const { sha } = await readProjects(githubToken.trim());
+        await writeProjects(githubToken.trim(), updated, sha);
+        showToast('Project deleted & synced with GitHub/Vercel.');
+        return;
+      } catch (_) {}
+    }
     showToast('Project removed.');
   };
 
@@ -251,7 +367,7 @@ export default function AdminPanel({ isOpen, onClose }) {
       title: proj.title, description: proj.description, location: proj.location,
       category: proj.category, capacity: proj.capacity, annualSavings: proj.annualSavings,
       panels: proj.panels || '', co2Offset: proj.co2Offset || '',
-      completionDate: proj.completionDate || '', imageBase64: proj.image || '',
+      completionDate: proj.completionDate || '', image: proj.image || '',
     });
     setPreviewImg(proj.image || null);
     setEditId(proj.id);
@@ -259,14 +375,17 @@ export default function AdminPanel({ isOpen, onClose }) {
   };
 
   const resetForm = () => {
-    setForm(EMPTY_FORM); setPreviewImg(null); setEditId(null);
+    setForm(EMPTY_FORM);
+    setPreviewImg(null);
+    setEditId(null);
     if (fileRef.current) fileRef.current.value = '';
   };
 
   if (!isOpen) return null;
 
   const missing = getMissing();
-  const isReady = missing.length === 0;
+  const isReady = missing.length === 0 && !isUploading;
+  const isCloudinaryActive = Boolean(cloudinary.cloudName.trim() && cloudinary.uploadPreset.trim());
 
   return (
     <AnimatePresence>
@@ -288,13 +407,11 @@ export default function AdminPanel({ isOpen, onClose }) {
             <div className="flex flex-col items-center justify-center min-h-screen px-4 relative"
               style={{ background: 'linear-gradient(135deg, #EAF2FF 0%, #F0F7FF 40%, #EAF8EE 100%)' }}
             >
-              {/* subtle grid */}
               <div className="absolute inset-0 pointer-events-none opacity-30" style={{
                 backgroundImage: 'linear-gradient(rgba(8,102,198,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(8,102,198,0.06) 1px, transparent 1px)',
                 backgroundSize: '48px 48px'
               }} />
 
-              {/* Close */}
               <button
                 onClick={onClose}
                 className="absolute top-5 right-5 p-2.5 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-200 transition-all shadow-sm"
@@ -308,7 +425,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                 transition={{ duration: 0.5 }}
                 className="relative z-10 w-full max-w-md"
               >
-                {/* Logo + title */}
                 <div className="flex flex-col items-center mb-8">
                   <div className="mb-4 p-3 bg-white rounded-3xl shadow-xl border border-slate-200/60">
                     <SolarAriseLogo imgClassName="h-16 w-16" showText={false} />
@@ -321,7 +437,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                   </p>
                 </div>
 
-                {/* Card */}
                 <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-2xl p-8">
                   <form onSubmit={handleLogin} className="space-y-5">
                     <div>
@@ -392,11 +507,20 @@ export default function AdminPanel({ isOpen, onClose }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Logged-in pill */}
-                  <span className="hidden md:flex items-center gap-1.5 text-xs font-black text-[#239B35] bg-[#EAF8EE] px-3 py-1.5 rounded-full border border-[#239B35]/20">
-                    <span className="w-2 h-2 rounded-full bg-[#239B35] animate-pulse" />
-                    Admin
-                  </span>
+                  {/* Cloudinary Status Indicator */}
+                  <button
+                    onClick={() => setTab('settings')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black border transition-all ${
+                      isCloudinaryActive
+                        ? 'bg-[#EBF2FF] text-[#0866C6] border-[#0866C6]/30'
+                        : 'bg-amber-50 text-amber-700 border-amber-200'
+                    }`}
+                  >
+                    <Cloud className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">
+                      {isCloudinaryActive ? 'Cloudinary: Connected' : 'Cloudinary: Setup'}
+                    </span>
+                  </button>
 
                   {/* Back to Main Site */}
                   <button
@@ -419,10 +543,11 @@ export default function AdminPanel({ isOpen, onClose }) {
               </div>
 
               {/* ── TAB BAR ── */}
-              <div className="shrink-0 flex items-center gap-1 px-4 sm:px-6 bg-white border-b-2 border-slate-200">
+              <div className="shrink-0 flex items-center gap-1 px-4 sm:px-6 bg-white border-b-2 border-slate-200 overflow-x-auto">
                 {[
                   { id: 'projects', label: `Projects (${projects.length})`, Icon: FolderOpen },
-                  { id: 'add', label: editId ? '✏ Edit Project' : '+ Add Project', Icon: Plus },
+                  { id: 'add',      label: editId ? '✏ Edit Project' : '+ Add Project', Icon: Plus },
+                  { id: 'settings', label: '☁ Cloudinary & Vercel Settings', Icon: Settings },
                 ].map(({ id, label, Icon }) => (
                   <button
                     key={id}
@@ -442,7 +567,7 @@ export default function AdminPanel({ isOpen, onClose }) {
               {/* ── SCROLLABLE BODY ── */}
               <div className="flex-1 overflow-y-auto bg-[#F4F7FF]">
 
-                {/* ══ PROJECTS TAB ══ */}
+                {/* ══ 1. PROJECTS TAB ══ */}
                 {tab === 'projects' && (
                   <div className="p-4 sm:p-6 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between mb-6">
@@ -452,14 +577,16 @@ export default function AdminPanel({ isOpen, onClose }) {
                           {projects.length} project{projects.length !== 1 ? 's' : ''} published to website
                         </p>
                       </div>
-                      <button
-                        onClick={() => { resetForm(); setTab('add'); }}
-                        className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-[#0866C6] to-[#239B35] text-white font-black text-xs sm:text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span className="hidden sm:inline">Add New Project</span>
-                        <span className="sm:hidden">Add</span>
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { resetForm(); setTab('add'); }}
+                          className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-[#0866C6] to-[#239B35] text-white font-black text-xs sm:text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span className="hidden sm:inline">Add New Project</span>
+                          <span className="sm:hidden">Add</span>
+                        </button>
+                      </div>
                     </div>
 
                     {projects.length === 0 ? (
@@ -488,7 +615,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                               animate={{ opacity: 1, y: 0 }}
                               className="bg-white rounded-3xl border-2 border-slate-200 shadow-md overflow-hidden hover:border-[#0866C6] hover:shadow-xl transition-all group"
                             >
-                              {/* Image */}
                               <div className="relative h-44 sm:h-48 bg-slate-100">
                                 {proj.image ? (
                                   <img src={proj.image} alt={proj.title} className="w-full h-full object-cover" />
@@ -520,7 +646,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                                 </div>
                               </div>
 
-                              {/* Body */}
                               <div className="p-4">
                                 <h3 className="font-black text-[#071B49] text-sm leading-snug mb-1 line-clamp-1">{proj.title}</h3>
                                 <p className="text-slate-500 text-xs font-bold line-clamp-2 mb-3">{proj.description}</p>
@@ -551,7 +676,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                   </div>
                 )}
 
-                {/* ══ ADD / EDIT TAB ══ */}
+                {/* ══ 2. ADD / EDIT TAB ══ */}
                 {tab === 'add' && (
                   <div className="p-4 sm:p-6 max-w-5xl mx-auto pb-16">
                     <div className="flex items-center justify-between mb-6">
@@ -560,7 +685,9 @@ export default function AdminPanel({ isOpen, onClose }) {
                           {editId ? '✏️ Edit Project' : '🚀 Add New Project'}
                         </h2>
                         <p className="text-slate-500 text-xs sm:text-sm font-bold mt-0.5">
-                          Fill starred fields. Published projects appear on the website instantly.
+                          {isCloudinaryActive
+                            ? 'Images are uploaded directly to Cloudinary CDN.'
+                            : 'Upload images locally or connect Cloudinary in Settings for CDN hosting.'}
                         </p>
                       </div>
                       {editId && (
@@ -572,25 +699,44 @@ export default function AdminPanel({ isOpen, onClose }) {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                      {/* LEFT */}
+                      {/* LEFT COLUMN */}
                       <div className="space-y-5">
 
-                        {/* Image Upload */}
+                        {/* Image Upload box */}
                         <div>
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center justify-between mb-2">
                             <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider">
                               Project Image <span className="text-red-500">*</span>
                             </label>
-                            <span className="text-[10px] text-slate-400 font-bold">Max 5 MB · JPG/PNG/WEBP</span>
+                            {isCloudinaryActive ? (
+                              <span className="text-[10px] font-bold text-[#0866C6] bg-[#EBF2FF] px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <Cloud className="w-3 h-3" /> Cloudinary Active
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => setTab('settings')}
+                                className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full hover:bg-amber-100"
+                              >
+                                ⚡ Setup Cloudinary
+                              </button>
+                            )}
                           </div>
+
                           <div
-                            onClick={() => fileRef.current?.click()}
+                            onClick={() => !isUploading && fileRef.current?.click()}
                             className={`relative border-2 border-dashed rounded-3xl overflow-hidden cursor-pointer transition-all group ${
                               previewImg ? 'border-[#239B35] shadow-md shadow-[#239B35]/10' : 'border-slate-300 bg-slate-50 hover:border-[#0866C6] hover:bg-blue-50/30'
                             }`}
-                            style={{ height: '200px' }}
+                            style={{ height: '220px' }}
                           >
-                            {previewImg ? (
+                            {isUploading ? (
+                              <div className="flex flex-col items-center justify-center h-full gap-3 bg-white/90">
+                                <Loader2 className="w-8 h-8 text-[#0866C6] animate-spin" />
+                                <p className="font-black text-sm text-[#071B49]">Uploading to Cloudinary CDN...</p>
+                                <p className="text-xs text-slate-400 font-semibold">Fast HTTPS CDN conversion</p>
+                              </div>
+                            ) : previewImg ? (
                               <>
                                 <img src={previewImg} alt="Preview" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -598,8 +744,9 @@ export default function AdminPanel({ isOpen, onClose }) {
                                     <Upload className="w-4 h-4" /> Change Image
                                   </div>
                                 </div>
-                                <div className="absolute top-3 right-3 w-7 h-7 rounded-xl bg-[#239B35] flex items-center justify-center shadow-lg">
-                                  <CheckCircle className="w-4 h-4 text-white" />
+                                <div className="absolute top-3 right-3 px-3 py-1 rounded-xl bg-[#239B35] text-white text-xs font-black flex items-center gap-1 shadow-lg">
+                                  <CheckCircle className="w-3.5 h-3.5" />
+                                  <span>{form.image && form.image.includes('cloudinary') ? 'Cloud CDN' : 'Ready'}</span>
                                 </div>
                               </>
                             ) : (
@@ -609,11 +756,11 @@ export default function AdminPanel({ isOpen, onClose }) {
                                 </div>
                                 <div className="text-center">
                                   <p className="font-black text-sm text-slate-600">Click to Upload Image</p>
-                                  <p className="text-xs text-slate-400 font-bold mt-0.5">Best: 800×600 px landscape</p>
+                                  <p className="text-xs text-slate-400 font-bold mt-0.5">JPG, PNG, WEBP (Auto Cloudinary CDN)</p>
                                 </div>
                               </div>
                             )}
-                            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageFileChange} />
                           </div>
                         </div>
 
@@ -623,7 +770,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                             Category <span className="text-red-500">*</span>
                           </label>
                           <div className="flex gap-2">
-                            {CATEGORY_OPTIONS.map(({ value, label, Icon, color, lightBg }) => (
+                            {CATEGORY_OPTIONS.map(({ value, label, Icon, color }) => (
                               <button
                                 key={value}
                                 type="button"
@@ -648,7 +795,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                         <Field label="Location"        name="location"    value={form.location}    onChange={handleField} required placeholder="e.g., Coimbatore, Tamil Nadu" />
                       </div>
 
-                      {/* RIGHT */}
+                      {/* RIGHT COLUMN */}
                       <div className="space-y-4">
                         <Field label="System Capacity" name="capacity"       value={form.capacity}       onChange={handleField} required placeholder="e.g., 5 kW or 100 kW or 1 MW" />
                         <Field label="Annual Savings"  name="annualSavings"  value={form.annualSavings}  onChange={handleField} required placeholder="e.g., ₹72,000 / year" />
@@ -678,7 +825,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                       </div>
                     </div>
 
-                    {/* ── PUBLISH AREA ── */}
+                    {/* PUBLISH BUTTON AREA */}
                     <div className="mt-8 pt-6 border-t-2 border-slate-200 space-y-4">
                       {!isReady ? (
                         <div className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-amber-50 border-2 border-amber-200 text-amber-700">
@@ -691,7 +838,10 @@ export default function AdminPanel({ isOpen, onClose }) {
                       ) : (
                         <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-[#EAF8EE] border-2 border-[#239B35]/30 text-[#239B35]">
                           <CheckCircle className="w-5 h-5 shrink-0" />
-                          <p className="text-xs font-black">All required fields filled — ready to publish!</p>
+                          <p className="text-xs font-black">
+                            All required fields filled — ready to publish!
+                            {githubToken.trim() && ' (Will also sync with GitHub & Vercel)'}
+                          </p>
                         </div>
                       )}
 
@@ -699,16 +849,25 @@ export default function AdminPanel({ isOpen, onClose }) {
                         <button
                           type="button"
                           onClick={handleSave}
-                          disabled={!isReady}
+                          disabled={!isReady || isSaving}
                           className={`flex-1 sm:flex-initial py-4 px-10 rounded-2xl font-black text-base shadow-xl flex items-center justify-center gap-2.5 transition-all ${
-                            isReady
+                            isReady && !isSaving
                               ? 'bg-gradient-to-r from-[#239B35] to-[#0866C6] text-white hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
                               : 'bg-slate-100 text-slate-300 border-2 border-slate-200 cursor-not-allowed'
                           }`}
                         >
-                          <Save className="w-5 h-5" />
-                          {editId ? 'Update Project' : 'Publish Project'}
-                          {isReady && <ChevronRight className="w-4 h-4" />}
+                          {isSaving ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              <span>Publishing...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Save className="w-5 h-5" />
+                              <span>{editId ? 'Update Project' : 'Publish Project'}</span>
+                              <ChevronRight className="w-4 h-4" />
+                            </>
+                          )}
                         </button>
                         <button
                           type="button"
@@ -722,7 +881,153 @@ export default function AdminPanel({ isOpen, onClose }) {
                   </div>
                 )}
 
-              </div>{/* end scrollable body */}
+                {/* ══ 3. SETTINGS TAB (Cloudinary & Vercel Sync) ══ */}
+                {tab === 'settings' && (
+                  <div className="p-4 sm:p-6 max-w-4xl mx-auto pb-16 space-y-8">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-black text-[#071B49]">Cloudinary & Production Sync</h2>
+                      <p className="text-slate-500 text-xs sm:text-sm font-bold mt-1">
+                        Connect Cloudinary to store images on a high-speed CDN, and optionally sync with GitHub/Vercel.
+                      </p>
+                    </div>
+
+                    {/* Cloudinary Section */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-slate-200 shadow-md space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-2xl bg-[#EBF2FF] border border-[#0866C6]/20 flex items-center justify-center text-[#0866C6]">
+                            <Cloud className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-black text-[#071B49]">Cloudinary Image Storage</h3>
+                            <p className="text-xs font-semibold text-slate-500">Free 25 GB monthly storage & global CDN</p>
+                          </div>
+                        </div>
+                        <a
+                          href="https://cloudinary.com/users/register_free"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-colors"
+                        >
+                          <span>Get Free Account</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider block mb-1.5">
+                            Cloudinary Cloud Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={cloudinary.cloudName}
+                            onChange={(e) => setCloudinary({ ...cloudinary, cloudName: e.target.value.trim() })}
+                            placeholder="e.g. dxyz123abc"
+                            className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-[#0866C6] focus:ring-4 focus:ring-[#0866C6]/10 outline-none text-sm font-bold text-[#071B49] bg-slate-50"
+                          />
+                          <p className="text-[10px] text-slate-400 font-semibold mt-1">Found on Cloudinary Dashboard</p>
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider block mb-1.5">
+                            Upload Preset (Unsigned) <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={cloudinary.uploadPreset}
+                            onChange={(e) => setCloudinary({ ...cloudinary, uploadPreset: e.target.value.trim() })}
+                            placeholder="e.g. solar_arise_preset"
+                            className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-[#0866C6] focus:ring-4 focus:ring-[#0866C6]/10 outline-none text-sm font-bold text-[#071B49] bg-slate-50"
+                          />
+                          <p className="text-[10px] text-slate-400 font-semibold mt-1">Settings → Upload → Add Upload Preset (Signing: Unsigned)</p>
+                        </div>
+                      </div>
+
+                      {/* Cloudinary Step-by-Step Guide */}
+                      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 space-y-2">
+                        <p className="font-black text-[#071B49] text-xs">📖 1-Minute Setup Guide:</p>
+                        <ol className="list-decimal list-inside space-y-1 text-slate-500">
+                          <li>Go to <a href="https://cloudinary.com" target="_blank" rel="noopener noreferrer" className="text-[#0866C6] font-bold underline">cloudinary.com</a> and sign in / register free.</li>
+                          <li>Copy your <strong>Cloud Name</strong> from the Dashboard home.</li>
+                          <li>Go to <strong>Settings (Gear icon) → Upload Presets → Add upload preset</strong>.</li>
+                          <li>Change <strong>Signing Mode</strong> to <strong>Unsigned</strong>, name it (e.g. <code>solar_arise</code>), and click <strong>Save</strong>.</li>
+                        </ol>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={handleSaveSettings}
+                          className="px-6 py-3 rounded-2xl bg-[#0866C6] hover:bg-[#0756a8] text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all"
+                        >
+                          <Save className="w-4 h-4" />
+                          <span>Save Settings</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleTestCloudinary}
+                          disabled={isTestingCloud}
+                          className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-200 text-[#071B49] font-black text-xs sm:text-sm flex items-center gap-2 transition-all"
+                        >
+                          {isTestingCloud ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin text-[#0866C6]" />
+                              <span>Testing...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4 text-[#239B35]" />
+                              <span>Test Connection</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* GitHub & Vercel Sync Section (Optional) */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-slate-200 shadow-md space-y-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-[#EAF8EE] border border-[#239B35]/20 flex items-center justify-center text-[#239B35]">
+                          <Globe className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-black text-[#071B49]">Auto-Deploy with Vercel (Optional)</h3>
+                          <p className="text-xs font-semibold text-slate-500">Commits project list to GitHub repo automatically</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider block mb-1.5">
+                          GitHub Personal Access Token (PAT)
+                        </label>
+                        <input
+                          type="password"
+                          value={githubToken}
+                          onChange={(e) => setGithubToken(e.target.value)}
+                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-[#239B35] focus:ring-4 focus:ring-[#239B35]/10 outline-none text-sm font-bold text-[#071B49] bg-slate-50"
+                        />
+                        <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                          Optional: If entered, every published project auto-commits to your GitHub repo, triggering an automatic Vercel build!
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleSaveSettings}
+                        className="px-6 py-3 rounded-2xl bg-[#239B35] hover:bg-[#1f872e] text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>Save GitHub Token</span>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
+
+              </div>{/* end body */}
             </div>
           )}
 

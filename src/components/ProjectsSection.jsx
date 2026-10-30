@@ -100,6 +100,23 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
 
   // Reload admin projects when localStorage changes (cross-tab) or via polling (same-tab)
   useEffect(() => {
+    // 1. Fetch from static JSON file (production data committed to codebase)
+    fetch('/data/admin-projects.json')
+      .then((r) => r.json())
+      .then((serverProjects) => {
+        if (Array.isArray(serverProjects) && serverProjects.length > 0) {
+          setAdminProjects((prev) => {
+            const map = new Map();
+            // Start with server projects
+            serverProjects.forEach((p) => map.set(p.id, p));
+            // Overlay any local edits/adds
+            getAdminProjects().forEach((p) => map.set(p.id, p));
+            return Array.from(map.values());
+          });
+        }
+      })
+      .catch(() => {});
+
     const handleStorage = () => setAdminProjects(getAdminProjects());
     window.addEventListener('storage', handleStorage);
     const interval = setInterval(() => setAdminProjects(getAdminProjects()), 2000);
