@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { getAdminProjects } from './AdminPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
@@ -88,13 +89,39 @@ const PROJECTS_DATA = [
   },
 ];
 
+const ICON_MAP = { residential: Home, commercial: Building2, industrial: Factory };
+
 export default function ProjectsSection({ onOpenQuoteModal }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const [adminProjects, setAdminProjects] = useState(() => getAdminProjects());
+
+  // Reload admin projects when localStorage changes (cross-tab) or via polling (same-tab)
+  useEffect(() => {
+    const handleStorage = () => setAdminProjects(getAdminProjects());
+    window.addEventListener('storage', handleStorage);
+    const interval = setInterval(() => setAdminProjects(getAdminProjects()), 2000);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Merge default projects + admin-added projects (with dynamic icon resolution)
+  const ALL_PROJECTS = useMemo(() => {
+    const adminWithIcons = adminProjects.map((p) => ({
+      ...p,
+      icon: ICON_MAP[p.category] || Home,
+      categoryLabel: p.categoryLabel || (p.category.charAt(0).toUpperCase() + p.category.slice(1)),
+      alt: p.alt || p.title,
+    }));
+    return [...PROJECTS_DATA, ...adminWithIcons];
+  }, [adminProjects]);
 
   const filteredProjects = useMemo(() => {
-    return PROJECTS_DATA.filter((proj) => {
+    return ALL_PROJECTS.filter((proj) => {
       const matchesCategory = activeFilter === 'all' || proj.category === activeFilter;
       const matchesSearch =
         proj.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -102,7 +129,13 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
         proj.categoryLabel.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [activeFilter, searchQuery]);
+  }, [ALL_PROJECTS, activeFilter, searchQuery]);
+
+  // Reset showAll when filter/search changes
+  useEffect(() => { setShowAll(false); }, [activeFilter, searchQuery]);
+
+  const displayedProjects = showAll ? filteredProjects : filteredProjects.slice(0, 4);
+  const extraCount = filteredProjects.length - 4;
 
   return (
     <section
@@ -329,10 +362,10 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
           </div>
         </div>
 
-        {/* 4 Expansive Project Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        {/* Project Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => {
+            {displayedProjects.map((project) => {
               const Icon = project.icon;
               return (
                 <motion.article
@@ -412,6 +445,31 @@ export default function ProjectsSection({ onOpenQuoteModal }) {
             })}
           </AnimatePresence>
         </div>
+
+        {/* Show More / Show Less Button */}
+        {extraCount > 0 && (
+          <div className="flex justify-center mt-8 mb-10">
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              className="group relative inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#071B49] to-[#0866C6] text-white font-black text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-white/20"
+            >
+              <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              {showAll ? (
+                <>
+                  <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  <span>Show Less Projects</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                  <span>Show More Projects ({extraCount} more)</span>
+                  <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-xs font-black">{filteredProjects.length}</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Consultation Callout Banner */}
         <motion.div

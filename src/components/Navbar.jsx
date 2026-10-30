@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Menu, X, ArrowUpRight, PhoneCall } from 'lucide-react';
+import { MessageCircle, Menu, X, ArrowUpRight, PhoneCall, Lock } from 'lucide-react';
 import SolarAriseLogo from './SolarAriseLogo';
 import { WhatsAppLogo, PhoneDialerLogo } from './BrandLogos';
 
@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { name: 'Contact',       href: '#contact',       id: 'contact' },
 ];
 
-export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
+export default function Navbar({ onOpenQuoteModal, onOpenExpertModal, onOpenAdmin }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('Home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -209,6 +209,18 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                 <span className="sr-only">WhatsApp</span>
               </a>
 
+              {/* Admin Panel Button — desktop only, subtle lock icon */}
+              <button
+                type="button"
+                onClick={() => onOpenAdmin && onOpenAdmin()}
+                title="Admin Panel"
+                aria-label="Open Admin Panel"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-300 text-slate-500 hover:bg-[#071B49] hover:text-white hover:border-[#071B49] transition-all duration-300 text-xs font-black shadow-sm hover:shadow-md"
+              >
+                <Lock className="w-3.5 h-3.5 shrink-0" />
+                <span>Admin</span>
+              </button>
+
               {/* Get Free Quote CTA Button */}
               <button
                 type="button"
@@ -345,6 +357,21 @@ export default function Navbar({ onOpenQuoteModal, onOpenExpertModal }) {
                     >
                       <PhoneDialerLogo className="w-4 h-4 shrink-0" />
                       <span>Speak with Solar Engineer</span>
+                    </button>
+                  )}
+
+                  {/* Admin Panel in mobile drawer */}
+                  {onOpenAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        onOpenAdmin();
+                      }}
+                      className="w-full py-2 bg-slate-50 border border-slate-300 text-slate-600 hover:bg-[#071B49] hover:text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <Lock className="w-4 h-4 shrink-0" />
+                      <span>Admin Panel</span>
                     </button>
                   )}
                 </div>

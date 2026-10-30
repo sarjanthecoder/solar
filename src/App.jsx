@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Solar3DScrollSection from './components/Solar3DScrollSection';
@@ -9,9 +9,12 @@ import WhyChooseUsSection from './components/WhyChooseUsSection';
 import SolarProductsSection from './components/SolarProductsSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
-import { WhatsAppLogo } from './components/BrandLogos';
+import { WhatsAppLogo, PhoneDialerLogo } from './components/BrandLogos';
+import AdminPanel from './components/AdminPanel';
 
 export default function App() {
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+
   // Smooth scroll directly to Contact quote form whenever "Get Quote" is clicked
   const handleGoToContact = () => {
     const contactEl = document.getElementById('contact');
@@ -44,6 +47,7 @@ export default function App() {
       <Navbar
         onOpenQuoteModal={handleGoToContact}
         onOpenExpertModal={handleGoToContact}
+        onOpenAdmin={() => setIsAdminOpen(true)}
       />
 
       {/* Cinematic Hero Section */}
@@ -117,6 +121,27 @@ export default function App() {
           </span>
         </a>
       </aside>
+
+      {/* Floating Left-Side Call Button */}
+      <aside aria-label="Call Solar Arise" className="fixed bottom-20 sm:bottom-8 left-4 sm:left-7 z-40">
+        <a
+          href="tel:+919600281759"
+          title="Call Solar Arise (+91 96002 81759)"
+          className="group flex items-center gap-2 sm:gap-2.5 bg-white p-2.5 sm:pl-3.5 sm:pr-4 sm:py-2.5 rounded-full shadow-2xl border-2 border-[#00AAEE] hover:bg-[#00AAEE] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#00AAEE]/40 cursor-pointer"
+        >
+          <span className="relative flex h-3 w-3 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00AAEE] opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00AAEE]" />
+          </span>
+          <PhoneDialerLogo className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+          <span className="hidden sm:inline text-xs sm:text-sm font-black text-[#071B49] group-hover:text-white transition-colors">
+            Call Us Now
+          </span>
+        </a>
+      </aside>
+
+      {/* Admin Panel Modal */}
+      <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
     </main>
   );
 }
