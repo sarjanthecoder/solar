@@ -125,7 +125,7 @@ export default function AdminPanel({ isOpen, onClose }) {
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), 4500);
   };
 
   /* ── Login ── */
@@ -160,13 +160,17 @@ export default function AdminPanel({ isOpen, onClose }) {
 
   /* ── Save Project ── */
   const handleSave = () => {
-    if (!form.title.trim() || !form.description.trim() || !form.location.trim() ||
-      !form.capacity.trim() || !form.annualSavings.trim()) {
-      showToast('Please fill all required fields.', 'error');
-      return;
-    }
-    if (!form.imageBase64 && !editId) {
-      showToast('Please upload a project image.', 'error');
+    // Gather missing fields
+    const missing = [];
+    if (!form.title.trim()) missing.push('Project Title');
+    if (!form.description.trim()) missing.push('Description');
+    if (!form.location.trim()) missing.push('Location');
+    if (!form.capacity.trim()) missing.push('System Capacity');
+    if (!form.annualSavings.trim()) missing.push('Annual Savings');
+    if (!form.imageBase64 && !editId) missing.push('Project Image');
+
+    if (missing.length > 0) {
+      showToast(`Missing: ${missing.join(', ')}`, 'error');
       return;
     }
     const catInfo = CATEGORY_OPTIONS.find((c) => c.value === form.category);
@@ -259,19 +263,20 @@ export default function AdminPanel({ isOpen, onClose }) {
             transition={{ type: 'spring', stiffness: 320, damping: 28 }}
             className="relative z-10 w-full max-w-5xl bg-[#F0F4FF] rounded-none sm:rounded-3xl shadow-2xl border-0 sm:border-2 sm:border-white/60 min-h-screen sm:min-h-0 my-0 sm:my-6 overflow-hidden"
           >
-            {/* ── Toast ── */}
+            {/* ── Toast — fixed so always visible even when scrolled ── */}
             <AnimatePresence>
               {toast && (
                 <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={`absolute top-4 right-4 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl text-sm font-bold text-white ${toast.type === 'error' ? 'bg-red-500' : 'bg-[#239B35]'}`}
+                  initial={{ opacity: 0, y: -40, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -40, scale: 0.95 }}
+                  className={`fixed top-5 left-1/2 -translate-x-1/2 z-[1100] flex items-center gap-2.5 px-5 py-3.5 rounded-2xl shadow-2xl text-sm font-black text-white border-2 border-white/30 ${toast.type === 'error' ? 'bg-red-500' : 'bg-[#239B35]'}`}
+                  style={{ minWidth: '240px', maxWidth: '90vw' }}
                 >
                   {toast.type === 'error'
-                    ? <AlertTriangle className="w-4 h-4 shrink-0" />
-                    : <CheckCircle className="w-4 h-4 shrink-0" />}
-                  {toast.msg}
+                    ? <AlertTriangle className="w-5 h-5 shrink-0" />
+                    : <CheckCircle className="w-5 h-5 shrink-0" />}
+                  <span className="flex-1 text-center">{toast.msg}</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -703,20 +708,48 @@ export default function AdminPanel({ isOpen, onClose }) {
                       </div>
 
                       {/* Save Button */}
-                      <div className="flex items-center gap-3 pt-2 border-t-2 border-slate-100">
-                        <button
-                          onClick={handleSave}
-                          className="flex-1 sm:flex-initial py-3.5 px-8 rounded-2xl bg-gradient-to-r from-[#239B35] to-[#0866C6] text-white font-black text-base shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                        >
-                          <Save className="w-5 h-5" />
-                          {editId ? 'Update Project' : 'Publish Project'}
-                        </button>
-                        <button
-                          onClick={() => { resetForm(); setTab('projects'); }}
-                          className="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm transition-colors"
-                        >
-                          Cancel
-                        </button>
+                      <div className="flex flex-col gap-3 pt-2 border-t-2 border-slate-100">
+                        {/* Inline validation hint */}
+                        {(() => {
+                          const missing = [];
+                          if (!form.title.trim()) missing.push('Title');
+                          if (!form.description.trim()) missing.push('Description');
+                          if (!form.location.trim()) missing.push('Location');
+                          if (!form.capacity.trim()) missing.push('Capacity');
+                          if (!form.annualSavings.trim()) missing.push('Annual Savings');
+                          if (!form.imageBase64 && !editId) missing.push('Image');
+                          return missing.length > 0 ? (
+                            <div className="flex items-start gap-2 px-4 py-3 rounded-xl bg-amber-50 border-2 border-amber-200 text-amber-700">
+                              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-xs font-black">Required fields missing:</p>
+                                <p className="text-xs font-semibold mt-0.5">{missing.join(' · ')}</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-50 border-2 border-green-200 text-green-700">
+                              <CheckCircle className="w-4 h-4 shrink-0" />
+                              <p className="text-xs font-black">All required fields filled — ready to publish!</p>
+                            </div>
+                          );
+                        })()}
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={handleSave}
+                            className="flex-1 sm:flex-initial py-3.5 px-8 rounded-2xl bg-gradient-to-r from-[#239B35] to-[#0866C6] text-white font-black text-base shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                          >
+                            <Save className="w-5 h-5" />
+                            {editId ? 'Update Project' : 'Publish Project'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { resetForm(); setTab('projects'); }}
+                            className="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -770,3 +803,4 @@ export default function AdminPanel({ isOpen, onClose }) {
     </AnimatePresence>
   );
 }
+
