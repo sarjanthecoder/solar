@@ -91,12 +91,12 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
         }}
       />
 
-      {/* ── MAIN COLUMNS (Increased Spacing & Harmonized Colors) ── */}
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-20 sm:pt-24 pb-16 sm:pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1.1fr_1.6fr_1.7fr_1.5fr] gap-12 lg:gap-10 items-start">
+      {/* ── MAIN COLUMNS (Generous Spacing & Clean Typography) ── */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-24 sm:pt-32 pb-20 sm:pb-28">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1.1fr_1.6fr_1.7fr_1.5fr] gap-14 lg:gap-12 items-start">
 
           {/* COL 1 — Brand */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div>
               <a
                 href="#home"
@@ -106,19 +106,19 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               >
                 <SolarAriseLogo
                   textColor="white"
-                  imgClassName="h-12 w-12 sm:h-14 sm:w-14"
+                  imgClassName="h-14 w-14 sm:h-16 sm:w-16"
                   showText={true}
                 />
               </a>
             </div>
 
-            <p className="text-sm font-medium text-slate-300 leading-relaxed max-w-sm">
+            <p className="text-[15px] font-medium text-slate-300 leading-[1.8] max-w-sm font-body">
               Clean solar electricity solutions for homes, commercial businesses, and agriculture
               across Tamil Nadu since 2014. MNRE &amp; TANGEDCO empanelled EPC contractor.
             </p>
 
             {/* Quick-dial pills — Official Brand Logos */}
-            <div className="flex flex-wrap gap-2.5 pt-1">
+            <div className="flex flex-wrap gap-3 pt-1">
               {[
                 {
                   label: 'WhatsApp',
@@ -155,7 +155,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
                   target={href.startsWith('http') ? '_blank' : undefined}
                   rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   title={title}
-                  className={`px-3.5 py-2 rounded-full border text-xs font-bold transition-all duration-200 shadow-sm cursor-pointer inline-flex items-center gap-2 active:scale-95 ${style}`}
+                  className={`px-4 py-2.5 rounded-full border text-xs font-bold tracking-wide transition-all duration-200 shadow-sm cursor-pointer inline-flex items-center gap-2 active:scale-95 ${style}`}
                 >
                   <Logo className="w-4 h-4 shrink-0" />
                   <span>{label}</span>
@@ -178,16 +178,16 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
           {/* COL 2 — Navigation */}
           <div>
-            <h4 className="text-xs font-black tracking-[0.25em] uppercase text-[#70D943] mb-5 pb-3 border-b border-white/10">
+            <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
               Navigation
             </h4>
-            <ul className="space-y-3.5">
+            <ul className="space-y-4">
               {NAV.map(({ label, href }) => (
                 <li key={label}>
                   <a
                     href={href}
                     onClick={(e) => handleSmoothScroll(e, href)}
-                    className="text-sm font-semibold text-slate-300 hover:text-white hover:text-[#70D943] hover:translate-x-1.5 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                    className="text-[14px] font-semibold text-slate-300 hover:text-[#70D943] hover:translate-x-1.5 transition-all inline-flex items-center gap-1.5 cursor-pointer font-body"
                   >
                     <span>{label}</span>
                   </a>
@@ -198,16 +198,16 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
           {/* COL 3 — Information / Solutions */}
           <div>
-            <h4 className="text-xs font-black tracking-[0.25em] uppercase text-[#70D943] mb-5 pb-3 border-b border-white/10">
+            <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
               Information
             </h4>
-            <ul className="space-y-3.5">
+            <ul className="space-y-4">
               {SOLUTIONS.map(({ label, href, tag }) => (
                 <li key={label}>
                   <a
                     href={href}
                     onClick={(e) => handleSmoothScroll(e, href)}
-                    className="text-sm font-semibold text-slate-300 hover:text-white hover:text-[#70D943] hover:translate-x-1.5 transition-all inline-flex items-center justify-between w-full max-w-[220px] cursor-pointer group"
+                    className="text-[14px] font-semibold text-slate-300 hover:text-[#70D943] hover:translate-x-1.5 transition-all inline-flex items-center justify-between w-full max-w-[220px] cursor-pointer group font-body"
                   >
                     <span className="group-hover:text-[#70D943] transition-colors">{label}</span>
                     {tag && (
@@ -223,20 +223,20 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
           {/* COL 4 — Contact Details */}
           <div>
-            <h4 className="text-xs font-black tracking-[0.25em] uppercase text-[#70D943] mb-5 pb-3 border-b border-white/10">
+            <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
               Contact Us
             </h4>
-            <div className="space-y-4 text-sm text-slate-300 leading-relaxed font-medium">
+            <div className="space-y-5 text-[14px] text-slate-300 leading-relaxed font-body">
               
               {/* Address with Google Maps link */}
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3.5">
                 <GoogleMapsLogo className="w-5 h-5 shrink-0 mt-0.5" />
                 <a
                   href="https://www.google.com/maps/search/?api=1&query=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476"
                   target="_blank"
                   rel="noopener noreferrer"
                   title="View Solar Arise office on Google Maps"
-                  className="text-slate-300 hover:text-[#70D943] transition-colors group inline-flex items-start gap-1"
+                  className="text-slate-300 hover:text-[#70D943] transition-colors group inline-flex items-start gap-1 font-semibold"
                 >
                   <span>81, Dheeran Towers, SDN Colony 2nd Street, Gobichettipalayam, Erode – 638476</span>
                   <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#70D943] shrink-0 mt-0.5" />
@@ -244,9 +244,9 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               </div>
 
               {/* Phone Numbers with Call & WhatsApp Badges */}
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3.5">
                 <PhoneDialerLogo className="w-5 h-5 shrink-0 mt-0.5" />
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2.5">
                   <div className="flex items-center flex-wrap gap-2">
                     <a
                       href="tel:+919600281759"
@@ -281,7 +281,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               </div>
 
               {/* Email with Gmail Logo */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3.5">
                 <GmailLogo className="w-5 h-5 shrink-0" />
                 <a
                   href="mailto:solararise1@gmail.com?subject=Inquiry%20from%20Solar%20Arise%20Website"
@@ -293,9 +293,9 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               </div>
 
               {/* Director & GST Info */}
-              <div className="pt-3 border-t border-white/10 text-xs text-slate-400 font-semibold leading-snug">
-                <div className="font-extrabold text-white uppercase tracking-wider">T. Kathirvel (Director)</div>
-                <div className="font-mono text-slate-300 mt-1">GST: 33GFXPK6789A1ZT</div>
+              <div className="pt-4 border-t border-white/10 text-xs text-slate-400 font-semibold leading-snug space-y-1">
+                <div className="font-extrabold text-white uppercase tracking-widest text-sm font-stylish">T. Kathirvel (Director)</div>
+                <div className="font-mono text-slate-300">GST: 33GFXPK6789A1ZT</div>
               </div>
 
             </div>
@@ -303,19 +303,19 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
           {/* COL 5 — Hours + Direct Quote Action */}
           <div>
-            <h4 className="text-xs font-black tracking-[0.25em] uppercase text-[#70D943] mb-5 pb-3 border-b border-white/10">
+            <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
               Hours &amp; Support
             </h4>
 
             {/* Hours card */}
-            <div className="rounded-2xl border border-white/15 bg-white/5 backdrop-blur-md p-5 space-y-3.5 mb-5 shadow-lg">
+            <div className="rounded-2xl border border-white/15 bg-white/5 backdrop-blur-md p-6 space-y-4 mb-6 shadow-lg">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-slate-300">Mon – Sat</span>
-                <span className="text-sm font-black text-white">9 AM – 7:30 PM</span>
+                <span className="text-[14px] font-bold text-slate-300 font-body">Mon – Sat</span>
+                <span className="text-[14px] font-black text-white">9 AM – 7:30 PM</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-slate-300">Sunday</span>
-                <span className="text-sm italic font-semibold text-slate-400">By Appt.</span>
+                <span className="text-[14px] font-bold text-slate-300 font-body">Sunday</span>
+                <span className="text-[14px] italic font-semibold text-slate-400">By Appt.</span>
               </div>
               
               {/* Clickable 24/7 Helpline */}
@@ -323,7 +323,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
                 <a
                   href="tel:+919600281759"
                   title="Call 24/7 Helpline (+91 96002 81759)"
-                  className="text-xs font-black text-[#70D943] hover:text-white uppercase tracking-wider flex items-center gap-2 transition-colors group cursor-pointer"
+                  className="text-xs font-black text-[#70D943] hover:text-white uppercase tracking-wider flex items-center gap-2 transition-colors group cursor-pointer font-stylish"
                 >
                   <PhoneDialerLogo className="w-4 h-4 shrink-0" />
                   <span>24/7 Helpline: 96002 81759</span>
@@ -336,13 +336,13 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               type="button"
               onClick={onOpenQuoteModal}
               className="
-                w-full py-3.5 px-5 rounded-xl
+                w-full py-4 px-5 rounded-xl
                 bg-gradient-to-r from-[#239B35] to-[#1e852d] hover:from-[#1e852d] hover:to-[#176a24]
-                text-white text-xs font-black tracking-[0.14em] uppercase
+                text-white text-sm font-black tracking-[0.14em] uppercase
                 flex items-center justify-center gap-2
                 shadow-lg hover:shadow-xl
                 hover:scale-[1.01] active:scale-[0.98]
-                transition-all duration-200 cursor-pointer
+                transition-all duration-200 cursor-pointer font-stylish
               "
             >
               <span>Get Your Free Quote</span>
@@ -355,12 +355,12 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
       {/* ── BOTTOM BAR (Deep Midnight Blue) ── */}
       <div className="border-t border-white/10 bg-[#040E29]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-semibold">
-          <span>
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-8 flex flex-col md:flex-row items-center justify-between gap-5 text-[13px] text-slate-400 font-semibold font-body">
+          <span className="text-center md:text-left leading-relaxed">
             © 2026 Solar Arise. All rights reserved. Gobichettipalayam, Erode, Tamil Nadu.
           </span>
 
-          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 font-bold text-slate-300">
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7 font-bold text-slate-300">
             {/* Privacy Policy Trigger */}
             <button
               type="button"

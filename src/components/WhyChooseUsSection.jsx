@@ -136,9 +136,6 @@ export default function WhyChooseUsSection({ onOpenQuoteModal, onOpenExpertModal
             'linear-gradient(135deg, #dcf0ff 0%, #c8e6fc 18%, #bde0f8 35%, #caeeca 60%, #c0e8c0 78%, #d4f5d4 100%)',
         }}
       >
-        {/* Bottom-edge blend — only at the very bottom of the banner to merge into content below */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 bg-gradient-to-t from-white/80 to-transparent pointer-events-none z-20" />
-
         {/* Soft radial sky shimmer */}
         <div
           className="absolute inset-0 pointer-events-none"

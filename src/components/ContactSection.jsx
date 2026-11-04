@@ -27,10 +27,39 @@ export default function ContactSection() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
+
+    // Build the WhatsApp pre-filled message with greetings + user details
+    const greeting = `Hello Solar Arise! 🌞`;
+    const intro = `I saw your advertisement and I'm interested in solar solutions. Please contact me for more information.`;
+    const details = [
+      ``,
+      `📋 *My Details:*`,
+      `👤 Name: ${formData.name}`,
+      formData.city ? `📍 District: ${formData.city}` : '',
+      `📞 Phone: ${formData.phone}`,
+      formData.email ? `📧 Email: ${formData.email}` : '',
+      ``,
+      `Please call me at your earliest convenience. I'd love to know more about solar installation, government subsidies, and pricing options.`,
+      ``,
+      `Thank you! 🙏`,
+    ].filter(Boolean).join('\n');
+
+    const fullMessage = `${greeting}\n\n${intro}\n${details}`;
+    const whatsappUrl = `https://wa.me/919600281759?text=${encodeURIComponent(fullMessage)}`;
+
+    // Confetti celebration
     try {
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#239B35', '#70D943', '#0866C6'] });
     } catch (_) {}
+
+    setIsSubmitted(true);
+
+    // Open WhatsApp in new tab with pre-filled message
+    setTimeout(() => {
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    }, 400);
+
+    // Reset form after a few seconds
     setTimeout(() => {
       setIsSubmitted(false);
       setFormData({ name: '', city: '', phone: '', email: '' });
@@ -52,8 +81,8 @@ export default function ContactSection() {
       style={{ minHeight: '640px' }}
       aria-label="Contact Solar Arise"
     >
-      {/* Seamless Blend from Products Section (Zero Cut Line) */}
-      <div className="absolute top-0 left-0 right-0 h-20 sm:h-28 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none z-20" />
+      {/* Seamless Blend from Products Section — only top edge, so images don't get double-faded */}
+      <div className="absolute top-0 left-0 right-0 h-20 sm:h-28 bg-gradient-to-b from-white via-white/60 to-transparent pointer-events-none z-20" />
 
       {/* ── FULL-BLEED 50/50 split ── */}
       <div className="flex flex-col lg:flex-row min-h-[640px]">
@@ -237,12 +266,12 @@ export default function ContactSection() {
                   {isSubmitted ? (
                     <>
                       <CheckCircle2 className="w-5 h-5" />
-                      <span>Request Sent! We'll call you soon.</span>
+                      <span>Opening WhatsApp… 🚀</span>
                     </>
                   ) : (
                     <>
-                      <span>Get Free Solar Quote</span>
-                      <Send className="w-4 h-4" />
+                      <WhatsAppLogo className="w-5 h-5" />
+                      <span>Get Free Solar Quote via WhatsApp</span>
                     </>
                   )}
                 </button>
