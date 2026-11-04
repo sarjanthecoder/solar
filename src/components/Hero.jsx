@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import {
   ArrowRight,
-  PhoneCall,
   Home,
   ShieldCheck,
   Zap,
@@ -11,7 +10,6 @@ import {
 } from 'lucide-react';
 import SolarCanvas from './SolarCanvas';
 import SolarBadge from './SolarBadge';
-import { PhoneDialerLogo } from './BrandLogos';
 
 export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
   // Motion values for subtle 3D parallax on mouse move
@@ -64,14 +62,6 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
     const nextSection = document.getElementById('3d-solar-experience') || document.getElementById('services');
     if (nextSection) {
       nextSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleTalkToExpert = (e) => {
-    e.preventDefault();
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -250,29 +240,18 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
         </motion.div>
       </div>
 
-      {/* 4. CTA Buttons — centered on mobile, right-aligned on desktop */}
-      <div className="absolute bottom-5 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-6 lg:right-10 xl:right-14 z-30 flex flex-row items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
+      {/* 4. CTA Button — centered on mobile, right-aligned on desktop */}
+      <div className="absolute bottom-5 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-6 lg:right-10 xl:right-14 z-30 flex items-center justify-center sm:justify-end">
         {/* Primary CTA: Scrolls to Next Section */}
         <button
           type="button"
           onClick={handleExploreSolar}
-          className="group relative overflow-hidden btn-3d-primary py-2.5 sm:py-3.5 px-4 sm:px-7 rounded-full text-white font-extrabold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#70D943]/40 shadow-2xl flex-1 sm:flex-initial"
+          className="group relative overflow-hidden btn-3d-primary py-2.5 sm:py-3.5 px-6 sm:px-8 rounded-full text-white font-extrabold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#70D943]/40 shadow-2xl w-full sm:w-auto"
           aria-label="Explore Solar Solutions"
         >
           <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12 animate-light-sweep pointer-events-none" />
           <span className="relative z-10 tracking-wide">Explore Solar</span>
           <ArrowRight className="relative z-10 w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-        </button>
-
-        {/* Secondary CTA: Scrolls directly to Contact Section */}
-        <button
-          type="button"
-          onClick={handleTalkToExpert}
-          className="group btn-glass-secondary py-2.5 sm:py-3.5 px-4 sm:px-7 rounded-full font-bold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#0866C6]/25 shadow-xl bg-white/95 flex-1 sm:flex-initial"
-          aria-label="Talk to an Expert"
-        >
-          <PhoneDialerLogo className="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-          <span>Talk to Expert</span>
         </button>
       </div>
     </section>
