@@ -220,7 +220,7 @@ export default function AdminPanel({ isOpen, onClose }) {
         setPreviewImg(ev.target.result);
       };
       reader.readAsDataURL(file);
-      showToast('Image selected locally. (Add VITE_CLOUDINARY_* in .env / Vercel for CDN)', 'success');
+      showToast('Image selected locally.', 'success');
     }
   };
 

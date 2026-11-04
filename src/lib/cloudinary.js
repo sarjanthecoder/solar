@@ -1,22 +1,21 @@
 /**
  * cloudinary.js
- * Automatically uploads images to Cloudinary CDN using environment variables.
- * Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env or Vercel dashboard.
+ * Automatically uploads images to Cloudinary CDN directly using the configured credentials.
  */
 
-const ENV_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
-const ENV_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '';
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'czncds3m';
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'solar project';
 
 export function isCloudinaryConfigured() {
-  return Boolean(ENV_CLOUD_NAME && ENV_UPLOAD_PRESET);
+  return Boolean(CLOUD_NAME && UPLOAD_PRESET);
 }
 
 export async function uploadToCloudinary(file) {
-  const cloudName = (ENV_CLOUD_NAME || '').trim();
-  const uploadPreset = (ENV_UPLOAD_PRESET || '').trim();
+  const cloudName = (CLOUD_NAME || '').trim();
+  const uploadPreset = (UPLOAD_PRESET || '').trim();
 
   if (!cloudName || !uploadPreset) {
-    throw new Error('VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET are missing in .env');
+    throw new Error('Cloudinary credentials missing');
   }
 
   const formData = new FormData();
