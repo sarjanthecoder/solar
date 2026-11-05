@@ -94,25 +94,26 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
           title="Visit Official PM Surya Ghar Muft Bijli Yojana Portal — Government of India"
           className="group flex flex-col sm:flex-row items-center gap-5 p-5 sm:p-6 rounded-2xl border border-[#FF9933]/30 bg-gradient-to-r from-[#FF9933]/10 via-white/5 to-[#138808]/10 hover:border-[#FF9933]/60 hover:from-[#FF9933]/15 hover:to-[#138808]/15 transition-all duration-300 mb-14 cursor-pointer shadow-lg"
         >
-          {/* India Tricolor Badge */}
+          {/* Official Govt Logos */}
           <div className="flex items-center gap-4 shrink-0">
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-white/20 shadow-xl bg-white flex items-center justify-center">
-              <img
-                src="https://pmsuryaghar.gov.in/images/psg-logo.png"
-                alt="PM Surya Ghar Muft Bijli Yojana — Official Logo"
-                className="w-full h-full object-contain p-1"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.style.display = 'none';
-                  e.target.parentElement.innerHTML = '<div class="text-3xl">🏛️</div>';
-                }}
-              />
+            {/* India National Emblem — Ashoka Pillar (Official) */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-14 h-14 sm:w-18 sm:h-18 flex items-center justify-center drop-shadow-xl">
+                <img
+                  src="/images/india-govt-emblem.svg"
+                  alt="National Emblem of India — Ashoka Pillar"
+                  className="h-14 sm:h-16 w-auto object-contain"
+                  style={{ filter: 'brightness(0) invert(1)' }}
+                />
+              </div>
+              <span className="text-[8px] font-black tracking-widest text-white/60 uppercase text-center leading-tight whitespace-nowrap">Govt. of India</span>
             </div>
-            {/* India flag tricolor stripe */}
-            <div className="hidden sm:flex flex-col gap-1">
-              <div className="w-1 h-6 rounded-full bg-[#FF9933]" />
-              <div className="w-1 h-6 rounded-full bg-white/60" />
-              <div className="w-1 h-6 rounded-full bg-[#138808]" />
+
+            {/* India flag tricolor vertical stripe */}
+            <div className="hidden sm:flex flex-col gap-0.5 self-stretch py-2">
+              <div className="flex-1 w-1.5 rounded-t-full bg-[#FF9933]" />
+              <div className="flex-1 w-1.5 bg-white/50" />
+              <div className="flex-1 w-1.5 rounded-b-full bg-[#138808]" />
             </div>
           </div>
 
