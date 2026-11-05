@@ -111,19 +111,6 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
           className="max-w-xl text-left my-auto w-full"
         >
 
-          {/* Eyebrow Pill with Official Round Logo */}
-          <motion.div variants={itemVariants} className="mb-3.5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#239B35]/30 shadow-sm max-w-full">
-            <img
-              src="/images/solar-arise-logo-192.webp"
-              alt="Solar Arise Official Round Logo"
-              className="w-5 h-5 rounded-full object-cover ring-1 ring-[#239B35]/40 shrink-0"
-              width="20"
-              height="20"
-            />
-            <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase text-[#071B49] truncate">
-              Solar Arise <span className="text-[#239B35]">•</span> A Unique Reliable Solar Product
-            </span>
-          </motion.div>
 
           {/* Main Headline — Times New Roman, bright & thick with clean word spacing */}
           <motion.div variants={itemVariants} className="mb-4 sm:mb-5 select-none">
