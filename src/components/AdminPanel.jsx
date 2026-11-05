@@ -460,6 +460,9 @@ export default function AdminPanel({ isOpen, onClose }) {
 
                 <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-2xl p-8">
                   <form onSubmit={handleLogin} className="space-y-5">
+                    {/* Hidden honeypot fields — trick browser autofill away from real field */}
+                    <input type="text" name="username" style={{ display: 'none' }} readOnly tabIndex={-1} aria-hidden="true" />
+                    <input type="password" name="password" style={{ display: 'none' }} readOnly tabIndex={-1} aria-hidden="true" />
                     <div>
                       <label className="text-[11px] font-black text-[#071B49] uppercase tracking-widest block mb-2">
                         Admin Password
@@ -471,11 +474,13 @@ export default function AdminPanel({ isOpen, onClose }) {
                           value={pwInput}
                           onChange={(e) => { setPwInput(e.target.value); setPwError(''); }}
                           placeholder="Enter password..."
-                          autoComplete="off"
+                          autoComplete="new-password"
                           autoCorrect="off"
                           autoCapitalize="off"
                           spellCheck={false}
-                          name="admin-secret-field"
+                          name={`admin-pw-${Date.now()}`}
+                          id="admin-pw-field"
+                          readOnly={false}
                           className="w-full border-2 border-slate-200 focus:border-[#0866C6] focus:ring-4 focus:ring-[#0866C6]/10 rounded-2xl pl-12 pr-12 py-4 text-[#071B49] font-bold text-base outline-none placeholder:text-slate-300 bg-slate-50 transition-all"
                         />
                         <button
