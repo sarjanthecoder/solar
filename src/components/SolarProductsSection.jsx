@@ -250,8 +250,7 @@ export default function SolarProductsSection({ onOpenQuoteModal, onOpenExpertMod
           </div>
         </div>
 
-        {/* Seamless Blend from Sky Banner to White Product Catalog (Zero Cut Line) */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 sm:h-36 bg-gradient-to-b from-transparent via-white/70 to-white pointer-events-none z-10" />
+
       </div>
 
       {/* ═══════════════════════════════════════════════
@@ -380,8 +379,7 @@ export default function SolarProductsSection({ onOpenQuoteModal, onOpenExpertMod
 
       </div>
 
-      {/* Seamless Transition into Contact Section (Zero Cut Line) */}
-      <div className="w-full h-16 sm:h-24 bg-gradient-to-b from-white to-slate-100/70 pointer-events-none" />
+
     </section>
   );
 }

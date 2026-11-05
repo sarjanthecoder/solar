@@ -282,8 +282,7 @@ export default function WhyChooseUsSection({ onOpenQuoteModal, onOpenExpertModal
           </div>
         </div>
 
-        {/* Seamless Blend from Sky Banner to White Features Grid (Zero Cut Line) */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 sm:h-36 bg-gradient-to-b from-transparent via-white/70 to-white pointer-events-none z-10" />
+
       </div>
 
       {/* ═══════════════════════════════════════════════
@@ -374,8 +373,7 @@ export default function WhyChooseUsSection({ onOpenQuoteModal, onOpenExpertModal
 
       </div>
 
-      {/* Seamless Transition into Solar Products Section (Zero Cut Line) */}
-      <div className="w-full h-16 sm:h-24 bg-gradient-to-b from-white to-[#dcf0ff]/40 pointer-events-none" />
+
     </section>
   );
 }

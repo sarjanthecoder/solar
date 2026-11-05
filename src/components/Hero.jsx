@@ -199,61 +199,9 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
               })()}
             </div>
           </motion.div>
-
-          {/* Trust Indicators Card — Clean alignment on mobile and desktop */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-4 py-2.5 px-3.5 sm:px-4 rounded-2xl glass-card text-xs sm:text-sm font-bold text-[#071B49] shadow-md border border-white/95 w-full sm:w-auto max-w-md backdrop-blur-md bg-white/85"
-            aria-label="Trust Indicators"
-          >
-            {/* Item 1 */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#239B35]/15 text-[#239B35] shrink-0">
-                <Home className="w-3.5 h-3.5" />
-              </span>
-              <span className="whitespace-nowrap">Residential & Commercial</span>
-            </div>
-
-            {/* Separator */}
-            <span className="hidden sm:inline-block w-1 h-3 bg-slate-300 rounded-full" aria-hidden="true" />
-
-            {/* Item 2 */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0866C6]/15 text-[#0866C6] shrink-0">
-                <Zap className="w-3.5 h-3.5" />
-              </span>
-              <span className="whitespace-nowrap">Expert Installation</span>
-            </div>
-
-            {/* Separator */}
-            <span className="hidden sm:inline-block w-1 h-3 bg-slate-300 rounded-full" aria-hidden="true" />
-
-            {/* Item 3 */}
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#70D943]/20 text-[#239B35] shrink-0">
-                <ShieldCheck className="w-3.5 h-3.5" />
-              </span>
-              <span className="whitespace-nowrap">Reliable Solar Solutions</span>
-            </div>
-          </motion.div>
-
         </motion.div>
       </div>
 
-      {/* 4. CTA Button — centered on mobile, right-aligned on desktop */}
-      <div className="absolute bottom-5 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-6 lg:right-10 xl:right-14 z-30 flex items-center justify-center sm:justify-end">
-        {/* Primary CTA: Scrolls to Next Section */}
-        <button
-          type="button"
-          onClick={handleExploreSolar}
-          className="group relative overflow-hidden btn-3d-primary py-2.5 sm:py-3.5 px-6 sm:px-8 rounded-full text-white font-extrabold text-xs sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-[#70D943]/40 shadow-2xl w-full sm:w-auto"
-          aria-label="Explore Solar Solutions"
-        >
-          <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12 animate-light-sweep pointer-events-none" />
-          <span className="relative z-10 tracking-wide">Explore Solar</span>
-          <ArrowRight className="relative z-10 w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-        </button>
-      </div>
     </section>
   );
 }

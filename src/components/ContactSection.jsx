@@ -82,8 +82,7 @@ export default function ContactSection() {
       style={{ minHeight: '640px' }}
       aria-label="Contact Solar Arise"
     >
-      {/* Seamless Blend from Products Section — only top edge, so images don't get double-faded */}
-      <div className="absolute top-0 left-0 right-0 h-20 sm:h-28 bg-gradient-to-b from-white via-white/60 to-transparent pointer-events-none z-20" />
+
 
       {/* ── FULL-BLEED 50/50 split ── */}
       <div className="flex flex-col lg:flex-row min-h-[640px]">
@@ -331,8 +330,7 @@ export default function ContactSection() {
           referrerPolicy="no-referrer-when-downgrade"
         />
 
-        {/* Top blend — seamless join from white form above */}
-        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-white to-transparent pointer-events-none z-10" />
+
 
         {/* Floating address pill — bottom-left */}
         <div className="absolute bottom-5 left-5 z-20 pointer-events-none">
