@@ -12,8 +12,73 @@ import { uploadToCloudinary, isCloudinaryConfigured } from '../lib/cloudinary';
 /* ─────────────────────────────────────────────
    CONSTANTS
 ───────────────────────────────────────────── */
-const ADMIN_PASSWORD = 'kathir@123';
+// ⚠️ Password stored ONLY in env — never hardcoded in bundle
+// Set VITE_ADMIN_PASS in Vercel env vars & local .env
+const _AP = import.meta.env.VITE_ADMIN_PASS || '';
 const STORAGE_KEY = 'solar_admin_projects';
+const LOCKOUT_KEY = 'solar_admin_lockout';
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS   = 15 * 60 * 1000; // 15 minutes
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+
+/* ── Brute-force helpers ── */
+function getLockout() {
+  try { return JSON.parse(localStorage.getItem(LOCKOUT_KEY) || '{}'); } catch { return {}; }
+}
+function saveLockout(obj) {
+  localStorage.setItem(LOCKOUT_KEY, JSON.stringify(obj));
+}
+function isLockedOut() {
+  const { until } = getLockout();
+  return until && Date.now() < until;
+}
+function getRemainingLockout() {
+  const { until } = getLockout();
+  if (!until || Date.now() >= until) return 0;
+  return Math.ceil((until - Date.now()) / 60000);
+}
+function recordFailedAttempt() {
+  const data = getLockout();
+  const attempts = (data.attempts || 0) + 1;
+  if (attempts >= MAX_ATTEMPTS) {
+    saveLockout({ attempts, until: Date.now() + LOCKOUT_MS });
+  } else {
+    saveLockout({ attempts });
+  }
+  return attempts;
+}
+function clearLockout() {
+  localStorage.removeItem(LOCKOUT_KEY);
+}
+
+/* ── Session token helpers ── */
+function makeToken() {
+  return `${Math.random().toString(36).slice(2)}_${Date.now()}`;
+}
+function saveSession() {
+  const token = makeToken();
+  sessionStorage.setItem('solar_admin_token', token);
+  sessionStorage.setItem('solar_admin_ts', Date.now().toString());
+}
+function checkSession() {
+  const token = sessionStorage.getItem('solar_admin_token');
+  const ts = parseInt(sessionStorage.getItem('solar_admin_ts') || '0', 10);
+  if (!token || !ts) return false;
+  if (Date.now() - ts > SESSION_TIMEOUT_MS) {
+    clearSession();
+    return false;
+  }
+  return true;
+}
+function touchSession() {
+  if (sessionStorage.getItem('solar_admin_token')) {
+    sessionStorage.setItem('solar_admin_ts', Date.now().toString());
+  }
+}
+function clearSession() {
+  sessionStorage.removeItem('solar_admin_token');
+  sessionStorage.removeItem('solar_admin_ts');
+}
 
 const CATEGORY_OPTIONS = [
   { value: 'residential', label: 'Residential', Icon: Home,     color: '#239B35', lightBg: '#EAF8EE' },
@@ -118,7 +183,7 @@ function Toast({ toast }) {
    MAIN ADMIN PANEL
 ───────────────────────────────────────────── */
 export default function AdminPanel({ isOpen, onClose }) {
-  const [authed, setAuthed]               = useState(() => sessionStorage.getItem('solar_admin_authed') === '1');
+  const [authed, setAuthed]               = useState(() => checkSession());
   const [pwInput, setPwInput]             = useState('');
   const [pwError, setPwError]             = useState('');
   const [showPw, setShowPw]               = useState(false);
@@ -149,6 +214,16 @@ export default function AdminPanel({ isOpen, onClose }) {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  /* ── Session activity touch ── */
+  useEffect(() => {
+    if (!authed) return;
+    const interval = setInterval(() => {
+      if (!checkSession()) { setAuthed(false); onClose(); }
+      else touchSession();
+    }, 60000); // check every 1 min
+    return () => clearInterval(interval);
+  }, [authed]);
+
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 4000);
@@ -157,24 +232,41 @@ export default function AdminPanel({ isOpen, onClose }) {
   /* ── Auth ── */
   const handleLogin = (e) => {
     e.preventDefault();
-    if (pwInput === ADMIN_PASSWORD) {
+
+    // Brute-force lockout check
+    if (isLockedOut()) {
+      setPwError(`Too many attempts. Try again in ${getRemainingLockout()} min.`);
+      setPwInput('');
+      return;
+    }
+
+    const correct = _AP && pwInput === _AP;
+    if (correct) {
+      clearLockout();
+      saveSession();
       setAuthed(true);
-      sessionStorage.setItem('solar_admin_authed', '1');
       setPwError(''); setPwInput('');
     } else {
-      setPwError('Incorrect password. Please try again.'); setPwInput('');
+      const attempts = recordFailedAttempt();
+      const remaining = MAX_ATTEMPTS - attempts;
+      if (isLockedOut()) {
+        setPwError(`Too many failed attempts. Locked for 15 minutes.`);
+      } else {
+        setPwError(`Incorrect password. ${remaining} attempt${remaining !== 1 ? 's' : ''} left.`);
+      }
+      setPwInput('');
     }
   };
 
   const handleLogout = () => {
     setAuthed(false);
-    sessionStorage.removeItem('solar_admin_authed');
+    clearSession();
     setPwInput(''); onClose();
   };
 
   const handleBackToSite = () => {
     setAuthed(false);
-    sessionStorage.removeItem('solar_admin_authed');
+    clearSession();
     setPwInput(''); onClose();
     window.location.reload();
   };
@@ -183,6 +275,14 @@ export default function AdminPanel({ isOpen, onClose }) {
   const handleImageFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // ── Bug #5 Fix: Whitelist image MIME types only ──
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      showToast('Only JPG, PNG, WEBP, or GIF images allowed.', 'error');
+      if (fileRef.current) fileRef.current.value = '';
+      return;
+    }
 
     if (file.size > 10 * 1024 * 1024) {
       showToast('Image must be under 10 MB.', 'error');

@@ -1,10 +1,11 @@
 /**
  * cloudinary.js
- * Automatically uploads images to Cloudinary CDN directly using the configured credentials.
+ * Uploads images to Cloudinary CDN using env-only credentials.
+ * Never hardcode fallback cloud name or preset in source.
  */
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'czncds3m';
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'solar project';
+const CLOUD_NAME    = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME   || '';
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '';
 
 export function isCloudinaryConfigured() {
   return Boolean(CLOUD_NAME && UPLOAD_PRESET);
