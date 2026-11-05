@@ -371,7 +371,11 @@ export default function AdminPanel({ isOpen, onClose }) {
                           value={pwInput}
                           onChange={(e) => { setPwInput(e.target.value); setPwError(''); }}
                           placeholder="Enter password..."
-                          autoComplete="current-password"
+                          autoComplete="off"
+                          autoCorrect="off"
+                          autoCapitalize="off"
+                          spellCheck={false}
+                          name="admin-secret-field"
                           className="w-full border-2 border-slate-200 focus:border-[#0866C6] focus:ring-4 focus:ring-[#0866C6]/10 rounded-2xl pl-12 pr-12 py-4 text-[#071B49] font-bold text-base outline-none placeholder:text-slate-300 bg-slate-50 transition-all"
                         />
                         <button
@@ -428,15 +432,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Cloudinary CDN Indicator badge (reads automatically from env) */}
-                  <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black border ${
-                    hasCloudinaryEnv
-                      ? 'bg-[#EBF2FF] text-[#0866C6] border-[#0866C6]/30'
-                      : 'bg-slate-50 text-slate-500 border-slate-200'
-                  }`}>
-                    <Cloud className="w-3.5 h-3.5" />
-                    <span>{hasCloudinaryEnv ? 'Cloudinary CDN: Active' : 'Local Storage Mode'}</span>
-                  </div>
 
                   {/* Back to Main Site */}
                   <button
@@ -598,9 +593,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                           {editId ? '✏️ Edit Project' : '🚀 Add New Project'}
                         </h2>
                         <p className="text-slate-500 text-xs sm:text-sm font-bold mt-0.5">
-                          {hasCloudinaryEnv
-                            ? 'Images are automatically converted & hosted on Cloudinary CDN.'
-                            : 'Upload your project image and details below.'}
+                          {'Upload your project image and fill in the details below.'}
                         </p>
                       </div>
                       {editId && (
@@ -621,11 +614,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                             <label className="text-[11px] font-black text-[#071B49] uppercase tracking-wider">
                               Project Image <span className="text-red-500">*</span>
                             </label>
-                            {hasCloudinaryEnv && (
-                              <span className="text-[10px] font-bold text-[#0866C6] bg-[#EBF2FF] px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <Cloud className="w-3 h-3" /> Cloudinary CDN Active
-                              </span>
-                            )}
+                            
                           </div>
 
                           <div
@@ -638,8 +627,8 @@ export default function AdminPanel({ isOpen, onClose }) {
                             {isUploading ? (
                               <div className="flex flex-col items-center justify-center h-full gap-3 bg-white/90">
                                 <Loader2 className="w-8 h-8 text-[#0866C6] animate-spin" />
-                                <p className="font-black text-sm text-[#071B49]">Uploading to Cloudinary CDN...</p>
-                                <p className="text-xs text-slate-400 font-semibold">Generating permanent image URL</p>
+                                <p className="font-black text-sm text-[#071B49]">Uploading image...</p>
+                                <p className="text-xs text-slate-400 font-semibold">Please wait a moment...</p>
                               </div>
                             ) : previewImg ? (
                               <>

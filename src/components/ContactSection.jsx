@@ -88,85 +88,15 @@ export default function ContactSection() {
       {/* ── FULL-BLEED 50/50 split ── */}
       <div className="flex flex-col lg:flex-row min-h-[640px]">
 
-        {/* LEFT — Live Google Map with address overlay card */}
-        <div className="relative lg:w-1/2 w-full min-h-[380px] lg:min-h-0 overflow-hidden">
-
-          {/* Google Maps Embed — Solar Arise, Gobichettipalayam */}
-          <iframe
-            title="Solar Arise Location — Gobichettipalayam, Erode"
-            src="https://maps.google.com/maps?q=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476+Tamil+Nadu+India&output=embed&z=16"
-            className="absolute inset-0 w-full h-full border-0"
-            loading="lazy"
-            allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
+        {/* LEFT — scenic background photo (restored) */}
+        <div className="relative lg:w-1/2 w-full min-h-[320px] lg:min-h-0 overflow-hidden">
+          <img
+            src="/images/contact-solar-villa-bg.jpg"
+            alt="Solar villa with rooftop panels"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
-
-          {/* Dark gradient overlay — top + bottom for text legibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#071B49]/90 via-transparent to-[#071B49]/30 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#071B49]/20 via-transparent to-transparent pointer-events-none hidden lg:block" />
-
-          {/* ── ADDRESS CARD — pinned bottom-left ── */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 pointer-events-none">
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 shadow-2xl pointer-events-auto">
-
-              {/* Header row */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#239B35] flex items-center justify-center shadow-lg shrink-0">
-                  <GoogleMapsLogo className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-black tracking-[0.2em] uppercase text-[#70D943]">Our Office Location</div>
-                  <div className="text-base font-black text-white leading-tight">Solar Arise</div>
-                </div>
-                {/* Open in Maps button */}
-                <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#239B35] hover:bg-[#1a7a28] text-white text-xs font-black transition-all shadow-md whitespace-nowrap"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Get Directions</span>
-                </a>
-              </div>
-
-              {/* Address */}
-              <div className="flex items-start gap-2.5 mb-3">
-                <MapPin className="w-4 h-4 text-[#70D943] shrink-0 mt-0.5" />
-                <p className="text-sm text-white/90 font-semibold leading-snug">
-                  81, Dheeran Towers, SDN Colony 2nd Street,<br />
-                  Gobichettipalayam, Erode – 638476,<br />
-                  Tamil Nadu, India
-                </p>
-              </div>
-
-              {/* Quick contact row */}
-              <div className="flex flex-wrap gap-2 pt-3 border-t border-white/15">
-                <a
-                  href="tel:+919600281759"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition-all"
-                >
-                  <Phone className="w-3.5 h-3.5 text-[#70D943]" />
-                  <span>96002 81759</span>
-                </a>
-                <a
-                  href="https://wa.me/919600281759"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366]/20 hover:bg-[#25D366] border border-[#25D366]/40 text-white text-xs font-bold transition-all"
-                >
-                  <WhatsAppLogo className="w-3.5 h-3.5" />
-                  <span>WhatsApp</span>
-                </a>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-[#70D943] text-xs font-bold">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Mon–Sat 9AM–7:30PM</span>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
+          {/* subtle right-side fade so card sits cleanly */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-white/30 lg:to-white/10 pointer-events-none" />
         </div>
 
         {/* RIGHT — white content card */}
@@ -383,6 +313,46 @@ export default function ContactSection() {
               </div>
             </div>
 
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── GOOGLE MAP — Full-width horizontal strip below the contact form ── */}
+      <div className="relative w-full" style={{ height: '340px' }}>
+
+        {/* Live Google Maps embed */}
+        <iframe
+          title="Solar Arise Office — Google Maps"
+          src="https://maps.google.com/maps?q=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476+Tamil+Nadu+India&output=embed&z=16"
+          className="absolute inset-0 w-full h-full border-0"
+          loading="lazy"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+
+        {/* Top blend — seamless join from white form above */}
+        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-white to-transparent pointer-events-none z-10" />
+
+        {/* Floating address pill — bottom-left */}
+        <div className="absolute bottom-5 left-5 z-20 pointer-events-none">
+          <div className="bg-[#071B49]/90 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 shadow-2xl flex items-center gap-3 pointer-events-auto">
+            <div className="w-8 h-8 rounded-lg bg-[#239B35] flex items-center justify-center shrink-0">
+              <GoogleMapsLogo className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-[11px] font-black text-[#70D943] uppercase tracking-widest">Solar Arise</div>
+              <div className="text-xs text-white/80 font-semibold">81, Dheeran Towers, Gobichettipalayam, Erode</div>
+            </div>
+            <a
+              href="https://www.google.com/maps/dir/?api=1&destination=81+Dheeran+Towers+SDN+Colony+2nd+Street+Gobichettipalayam+Erode+638476"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-2 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#239B35] hover:bg-[#1a7a28] text-white text-xs font-black transition-all shadow-md whitespace-nowrap"
+            >
+              <ExternalLink className="w-3 h-3" />
+              <span>Directions</span>
+            </a>
           </div>
         </div>
 
