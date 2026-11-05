@@ -27,15 +27,7 @@ const NAV = [
   { label: 'Contact Us',          href: '#contact' },
 ];
 
-const SOLUTIONS = [
-  { label: 'PM Surya Ghar Subsidy',         href: '#subsidy',         tag: '₹1L Max' },
-  { label: 'On-Grid Net-Metering',          href: '#services',        tag: 'TANGEDCO' },
-  { label: 'Commercial Solar (Up to 1 MW)', href: '#services',        tag: '1 MW' },
-  { label: '3-Year Capital Recovery',       href: '#why-choose-us',   tag: 'ROI' },
-  { label: 'Solar Water Pumps',             href: '#services',        tag: 'Agri' },
-  { label: 'Solar Fencing Systems',         href: '#services',        tag: 'Farms' },
-  { label: 'Bank Loan & Easy EMI',          href: '#subsidy',         tag: '0 Paper' },
-];
+
 
 export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
   const [legalModal, setLegalModal] = useState(null); // 'privacy' | 'terms' | 'guidelines' | null
@@ -91,9 +83,60 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
         }}
       />
 
-      {/* ── MAIN COLUMNS (Generous Spacing & Clean Typography) ── */}
+      {/* ── MAIN COLUMNS ── */}
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-24 sm:pt-32 pb-20 sm:pb-28">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1.1fr_1.6fr_1.7fr_1.5fr] gap-14 lg:gap-12 items-start">
+
+        {/* ── PM SURYA GHAR FEATURED BANNER ── */}
+        <a
+          href="https://pmsuryaghar.gov.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Visit Official PM Surya Ghar Muft Bijli Yojana Portal — Government of India"
+          className="group flex flex-col sm:flex-row items-center gap-5 p-5 sm:p-6 rounded-2xl border border-[#FF9933]/30 bg-gradient-to-r from-[#FF9933]/10 via-white/5 to-[#138808]/10 hover:border-[#FF9933]/60 hover:from-[#FF9933]/15 hover:to-[#138808]/15 transition-all duration-300 mb-14 cursor-pointer shadow-lg"
+        >
+          {/* India Tricolor Badge */}
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-white/20 shadow-xl bg-white flex items-center justify-center">
+              <img
+                src="https://pmsuryaghar.gov.in/images/psg-logo.png"
+                alt="PM Surya Ghar Muft Bijli Yojana — Official Logo"
+                className="w-full h-full object-contain p-1"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = '<div class="text-3xl">🏛️</div>';
+                }}
+              />
+            </div>
+            {/* India flag tricolor stripe */}
+            <div className="hidden sm:flex flex-col gap-1">
+              <div className="w-1 h-6 rounded-full bg-[#FF9933]" />
+              <div className="w-1 h-6 rounded-full bg-white/60" />
+              <div className="w-1 h-6 rounded-full bg-[#138808]" />
+            </div>
+          </div>
+
+          {/* Text */}
+          <div className="flex-1 text-center sm:text-left">
+            <div className="flex items-center gap-2 justify-center sm:justify-start mb-1">
+              <span className="text-[10px] font-black tracking-[0.25em] uppercase text-[#FF9933] font-stylish">Government of India — Official Scheme</span>
+            </div>
+            <div className="text-lg sm:text-xl font-black text-white leading-tight font-stylish">
+              PM Surya Ghar: Muft Bijli Yojana
+            </div>
+            <div className="text-[13px] text-slate-300 font-medium mt-1 font-body">
+              Get up to <span className="text-[#70D943] font-black">₹78,000 subsidy</span> on rooftop solar installation. Apply directly on the official Government of India portal.
+            </div>
+          </div>
+
+          {/* CTA arrow */}
+          <div className="shrink-0 flex items-center gap-2 px-5 py-3 rounded-xl bg-[#FF9933]/20 border border-[#FF9933]/40 group-hover:bg-[#FF9933] group-hover:border-[#FF9933] transition-all duration-200">
+            <span className="text-sm font-black text-white whitespace-nowrap">Visit Portal</span>
+            <ExternalLink className="w-4 h-4 text-white" />
+          </div>
+        </a>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1.2fr_1.8fr_1.6fr] gap-14 lg:gap-12 items-start">
 
           {/* COL 1 — Brand */}
           <div className="space-y-8">
@@ -196,32 +239,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
             </ul>
           </div>
 
-          {/* COL 3 — Information / Solutions */}
-          <div>
-            <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
-              Information
-            </h4>
-            <ul className="space-y-4">
-              {SOLUTIONS.map(({ label, href, tag }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    onClick={(e) => handleSmoothScroll(e, href)}
-                    className="text-[14px] font-semibold text-slate-300 hover:text-[#70D943] hover:translate-x-1.5 transition-all inline-flex items-center justify-between w-full max-w-[220px] cursor-pointer group font-body"
-                  >
-                    <span className="group-hover:text-[#70D943] transition-colors">{label}</span>
-                    {tag && (
-                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/10 text-[#70D943] border border-[#70D943]/30 shrink-0">
-                        {tag}
-                      </span>
-                    )}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* COL 4 — Contact Details */}
+          {/* COL 3 — Contact Details */}
           <div>
             <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
               Contact Us
@@ -301,7 +319,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
             </div>
           </div>
 
-          {/* COL 5 — Hours + Direct Quote Action */}
+          {/* COL 4 — Hours + Direct Quote Action */}
           <div>
             <h4 className="text-[11px] font-black tracking-[0.3em] uppercase text-[#70D943] mb-6 pb-4 border-b border-white/10 font-stylish">
               Hours &amp; Support
@@ -331,7 +349,7 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               </div>
             </div>
 
-            {/* Primary CTA button — Smooth scrolls straight to Contact section */}
+            {/* Primary CTA button */}
             <button
               type="button"
               onClick={onOpenQuoteModal}
@@ -397,10 +415,10 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
               target="_blank"
               rel="noopener noreferrer"
               title="Visit official Govt. of India PM Surya Ghar portal"
-              className="hover:text-[#70D943] text-white transition-colors inline-flex items-center gap-1.5 font-extrabold"
+              className="hover:text-[#FF9933] text-[#FF9933]/80 transition-colors inline-flex items-center gap-1.5 font-extrabold"
             >
               <span>PM Surya Ghar Portal</span>
-              <ExternalLink className="w-3.5 h-3.5 text-[#70D943]" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
