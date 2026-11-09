@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Solar3DScrollSection from './components/Solar3DScrollSection';
@@ -36,6 +36,27 @@ export default function App() {
     window.history.pushState(null, '', '/');
     setIsAdminOpen(false);
   };
+
+  // Hide floating buttons when Contact section or Footer is visible
+  const [showFloating, setShowFloating] = useState(true);
+
+  useEffect(() => {
+    const contactEl = document.getElementById('contact');
+    const footerEl = document.querySelector('footer');
+    if (!contactEl) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const anyVisible = entries.some((e) => e.isIntersecting);
+        setShowFloating(!anyVisible);
+      },
+      { threshold: 0.08 }
+    );
+
+    observer.observe(contactEl);
+    if (footerEl) observer.observe(footerEl);
+    return () => observer.disconnect();
+  }, []);
 
   // Smooth scroll directly to Contact quote form whenever "Get Quote" is clicked
   const handleGoToContact = () => {
@@ -121,46 +142,52 @@ export default function App() {
         onOpenExpertModal={handleGoToContact}
       />
 
-      {/* Floating Instant WhatsApp Button — Cleanly positioned above mobile CTA buttons */}
-      <aside
-        aria-label="Instant WhatsApp Contact"
-        className="fixed bottom-20 sm:bottom-8 right-4 sm:right-7 z-40"
-      >
-        <a
-          href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20solar%20rooftop%20solutions."
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Chat on WhatsApp (+91 96002 81759)"
-          className="group flex items-center gap-2 sm:gap-2.5 bg-white p-2.5 sm:pl-3.5 sm:pr-4 sm:py-2.5 rounded-full shadow-2xl border-2 border-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40 cursor-pointer"
-        >
-          <span className="relative flex h-3 w-3 shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#25D366]" />
-          </span>
-          <WhatsAppLogo className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
-          <span className="hidden sm:inline text-xs sm:text-sm font-black text-[#071B49] group-hover:text-white transition-colors">
-            WhatsApp Direct
-          </span>
-        </a>
-      </aside>
+      {/* Floating WhatsApp + Call buttons — hidden when Contact section visible */}
+      {showFloating && (
+        <>
+          {/* Floating WhatsApp — right side */}
+          <aside aria-label="Instant WhatsApp Contact" className="fixed bottom-6 right-4 sm:right-7 z-40 transition-all duration-300">
+            <a
+              href="https://wa.me/919600281759?text=Hello%20Solar%20Arise!%20I%20am%20interested%20in%20solar%20rooftop%20solutions."
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Chat on WhatsApp (+91 96002 81759)"
+              className="group flex items-center justify-center gap-2.5 bg-white shadow-2xl border-2 border-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40 cursor-pointer
+                w-12 h-12 rounded-full
+                sm:w-auto sm:h-auto sm:rounded-full sm:pl-3.5 sm:pr-4 sm:py-2.5"
+            >
+              <span className="relative flex h-2.5 w-2.5 shrink-0 sm:flex hidden">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#25D366]" />
+              </span>
+              <WhatsAppLogo className="w-6 h-6 shrink-0" />
+              <span className="hidden sm:inline text-sm font-black text-[#071B49] group-hover:text-white transition-colors whitespace-nowrap">
+                WhatsApp Direct
+              </span>
+            </a>
+          </aside>
 
-      {/* Floating Left-Side Call Button */}
-      <aside aria-label="Call Solar Arise" className="fixed bottom-20 sm:bottom-8 left-4 sm:left-7 z-40">
-        <a
-          href="tel:+919600281759"
-          title="Call Solar Arise (+91 96002 81759)"
-          className="group flex items-center gap-2 sm:gap-2.5 bg-white p-2.5 sm:pl-3.5 sm:pr-4 sm:py-2.5 rounded-full shadow-2xl border-2 border-[#00AAEE] hover:bg-[#00AAEE] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#00AAEE]/40 cursor-pointer"
-        >
-          <span className="relative flex h-3 w-3 shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00AAEE] opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00AAEE]" />
-          </span>
-          <PhoneDialerLogo className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
-          <span className="hidden sm:inline text-xs sm:text-sm font-black text-[#071B49] group-hover:text-white transition-colors">
-            Call Us Now
-          </span>
-        </a>
-      </aside>
+          {/* Floating Call — left side */}
+          <aside aria-label="Call Solar Arise" className="fixed bottom-6 left-4 sm:left-7 z-40 transition-all duration-300">
+            <a
+              href="tel:+919600281759"
+              title="Call Solar Arise (+91 96002 81759)"
+              className="group flex items-center justify-center gap-2.5 bg-white shadow-2xl border-2 border-[#00AAEE] hover:bg-[#00AAEE] hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#00AAEE]/40 cursor-pointer
+                w-12 h-12 rounded-full
+                sm:w-auto sm:h-auto sm:rounded-full sm:pl-3.5 sm:pr-4 sm:py-2.5"
+            >
+              <span className="relative flex h-2.5 w-2.5 shrink-0 sm:flex hidden">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00AAEE] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00AAEE]" />
+              </span>
+              <PhoneDialerLogo className="w-6 h-6 shrink-0" />
+              <span className="hidden sm:inline text-sm font-black text-[#071B49] group-hover:text-white transition-colors whitespace-nowrap">
+                Call Us Now
+              </span>
+            </a>
+          </aside>
+        </>
+      )}
 
       {/* Admin Panel Modal */}
       <AdminPanel isOpen={isAdminOpen} onClose={closeAdmin} />
