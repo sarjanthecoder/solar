@@ -427,7 +427,13 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
           {/* ── DESIGNED & DEVELOPED BY INNOVATION HACKS ── */}
           <div className="mt-7 pt-6 border-t border-white/[0.08] flex items-center justify-center">
-            <div className="group inline-flex items-center gap-3.5 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-white/[0.04] via-[#0B2259]/50 to-white/[0.04] border border-white/10 hover:border-[#38BDF8]/40 shadow-lg hover:shadow-[0_0_24px_rgba(56,189,248,0.16)] transition-all duration-300">
+            <a
+              href="https://innovationhacks.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Visit Innovation Hacks — innovationhacks.in"
+              className="group inline-flex items-center gap-3.5 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-white/[0.04] via-[#0B2259]/50 to-white/[0.04] border border-white/10 hover:border-[#38BDF8]/50 shadow-lg hover:shadow-[0_0_24px_rgba(56,189,248,0.22)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#38BDF8]/50"
+            >
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white p-0.5 shrink-0 shadow-[0_0_16px_rgba(56,189,248,0.28)] ring-2 ring-[#38BDF8]/30 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
                 <img
                   src="/images/innovation-hacks-logo.png"
@@ -447,9 +453,10 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
                   <span className="hidden sm:inline text-[10px] font-bold tracking-[0.16em] uppercase text-slate-400/90">
                     Build • Innovate • Impact
                   </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#38BDF8]/70 group-hover:text-[#38BDF8] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 ml-0.5" />
                 </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
