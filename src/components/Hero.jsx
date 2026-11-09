@@ -8,7 +8,6 @@ import {
   Sparkles,
   Sun
 } from 'lucide-react';
-import SolarCanvas from './SolarCanvas';
 import SolarBadge from './SolarBadge';
 
 export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
@@ -97,9 +96,6 @@ export default function Hero({ onOpenQuoteModal, onOpenExpertModal }) {
           aria-hidden="true"
         />
       </div>
-
-      {/* 2. Interactive Three.js Particle Layer (Floating Solar Photons & Sunbeam Accents) */}
-      <SolarCanvas />
 
       {/* 3. Hero Foreground Content Container (Centered 3D Text & Trust Badges on Left) */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 sm:pt-24 lg:pt-20 pb-24 sm:pb-8 flex items-center h-full">

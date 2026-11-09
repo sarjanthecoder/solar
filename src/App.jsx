@@ -13,7 +13,29 @@ import { WhatsAppLogo, PhoneDialerLogo } from './components/BrandLogos';
 import AdminPanel from './components/AdminPanel';
 
 export default function App() {
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  // Open admin if URL path is /admin
+  const [isAdminOpen, setIsAdminOpen] = useState(
+    () => window.location.pathname === '/admin'
+  );
+
+  // Listen for browser back/forward navigation
+  React.useEffect(() => {
+    const handlePop = () => {
+      setIsAdminOpen(window.location.pathname === '/admin');
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
+  const openAdmin = () => {
+    window.history.pushState(null, '', '/admin');
+    setIsAdminOpen(true);
+  };
+
+  const closeAdmin = () => {
+    window.history.pushState(null, '', '/');
+    setIsAdminOpen(false);
+  };
 
   // Smooth scroll directly to Contact quote form whenever "Get Quote" is clicked
   const handleGoToContact = () => {
@@ -47,7 +69,7 @@ export default function App() {
       <Navbar
         onOpenQuoteModal={handleGoToContact}
         onOpenExpertModal={handleGoToContact}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenAdmin={openAdmin}
       />
 
       {/* Cinematic Hero Section */}
@@ -141,7 +163,7 @@ export default function App() {
       </aside>
 
       {/* Admin Panel Modal */}
-      <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
+      <AdminPanel isOpen={isAdminOpen} onClose={closeAdmin} />
     </main>
   );
 }
