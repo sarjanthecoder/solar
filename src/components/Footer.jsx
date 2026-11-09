@@ -374,53 +374,82 @@ export default function Footer({ onOpenQuoteModal, onOpenExpertModal }) {
 
       {/* ── BOTTOM BAR (Deep Midnight Blue) ── */}
       <div className="border-t border-white/10 bg-[#040E29]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-8 flex flex-col md:flex-row items-center justify-between gap-5 text-[13px] text-slate-400 font-semibold font-body">
-          <span className="text-center md:text-left leading-relaxed">
-            © 2026 Solar Arise. All rights reserved. Gobichettipalayam, Erode, Tamil Nadu.
-          </span>
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-5 text-[13px] text-slate-400 font-semibold font-body">
+            <span className="text-center md:text-left leading-relaxed">
+              © 2026 Solar Arise. All rights reserved. Gobichettipalayam, Erode, Tamil Nadu.
+            </span>
 
-          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7 font-bold text-slate-300">
-            {/* Privacy Policy Trigger */}
-            <button
-              type="button"
-              onClick={() => setLegalModal('privacy')}
-              className="hover:text-[#70D943] hover:underline underline-offset-4 transition-colors cursor-pointer"
-            >
-              Privacy Policy
-            </button>
-            <span className="text-white/20 select-none">•</span>
+            <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7 font-bold text-slate-300">
+              {/* Privacy Policy Trigger */}
+              <button
+                type="button"
+                onClick={() => setLegalModal('privacy')}
+                className="hover:text-[#70D943] hover:underline underline-offset-4 transition-colors cursor-pointer"
+              >
+                Privacy Policy
+              </button>
+              <span className="text-white/20 select-none">•</span>
 
-            {/* Terms of Use Trigger */}
-            <button
-              type="button"
-              onClick={() => setLegalModal('terms')}
-              className="hover:text-[#70D943] hover:underline underline-offset-4 transition-colors cursor-pointer"
-            >
-              Terms of Use
-            </button>
-            <span className="text-white/20 select-none">•</span>
+              {/* Terms of Use Trigger */}
+              <button
+                type="button"
+                onClick={() => setLegalModal('terms')}
+                className="hover:text-[#70D943] hover:underline underline-offset-4 transition-colors cursor-pointer"
+              >
+                Terms of Use
+              </button>
+              <span className="text-white/20 select-none">•</span>
 
-            {/* Subsidy Guidelines Trigger */}
-            <button
-              type="button"
-              onClick={() => setLegalModal('guidelines')}
-              className="hover:text-[#70D943] hover:underline underline-offset-4 transition-colors cursor-pointer"
-            >
-              Subsidy Guidelines
-            </button>
-            <span className="text-white/20 select-none">•</span>
+              {/* Subsidy Guidelines Trigger */}
+              <button
+                type="button"
+                onClick={() => setLegalModal('guidelines')}
+                className="hover:text-[#70D943] hover:underline underline-offset-4 transition-colors cursor-pointer"
+              >
+                Subsidy Guidelines
+              </button>
+              <span className="text-white/20 select-none">•</span>
 
-            {/* Official PM Surya Ghar National Portal Link */}
-            <a
-              href="https://pmsuryaghar.gov.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Visit official Govt. of India PM Surya Ghar portal"
-              className="hover:text-[#FF9933] text-[#FF9933]/80 transition-colors inline-flex items-center gap-1.5 font-extrabold"
-            >
-              <span>PM Surya Ghar Portal</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+              {/* Official PM Surya Ghar National Portal Link */}
+              <a
+                href="https://pmsuryaghar.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Visit official Govt. of India PM Surya Ghar portal"
+                className="hover:text-[#FF9933] text-[#FF9933]/80 transition-colors inline-flex items-center gap-1.5 font-extrabold"
+              >
+                <span>PM Surya Ghar Portal</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* ── DESIGNED & DEVELOPED BY INNOVATION HACKS ── */}
+          <div className="mt-7 pt-6 border-t border-white/[0.08] flex items-center justify-center">
+            <div className="group inline-flex items-center gap-3.5 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-white/[0.04] via-[#0B2259]/50 to-white/[0.04] border border-white/10 hover:border-[#38BDF8]/40 shadow-lg hover:shadow-[0_0_24px_rgba(56,189,248,0.16)] transition-all duration-300">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white p-0.5 shrink-0 shadow-[0_0_16px_rgba(56,189,248,0.28)] ring-2 ring-[#38BDF8]/30 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                <img
+                  src="/images/innovation-hacks-logo.png"
+                  alt="Innovation Hacks Logo"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 leading-tight font-stylish">
+                  Designed &amp; Developed by
+                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-sm sm:text-[15px] font-black tracking-wide bg-gradient-to-r from-[#38BDF8] via-[#60A5FA] to-[#A78BFA] bg-clip-text text-transparent font-stylish">
+                    Innovation Hacks
+                  </span>
+                  <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-500" />
+                  <span className="hidden sm:inline text-[10px] font-bold tracking-[0.16em] uppercase text-slate-400/90">
+                    Build • Innovate • Impact
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
