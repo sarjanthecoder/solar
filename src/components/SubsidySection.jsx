@@ -13,6 +13,7 @@ import {
   UserCheck,
   FolderCheck,
   ClipboardCheck,
+  CreditCard,
   Send,
   MessageCircle,
 } from 'lucide-react';
@@ -357,6 +358,7 @@ export default function SubsidySection({ onOpenQuoteModal, onOpenExpertModal }) 
               <div className="p-5 space-y-3">
                 {[
                   { label: 'Aadhaar Card', ta: 'ஆதார் அட்டை', sub: 'Original + photocopy of connection owner', icon: UserCheck },
+                  { label: 'PAN Card', ta: 'பான் கார்டு', sub: 'Required as subsidy exceeds ₹50,000 (DBT mandate)', icon: CreditCard },
                   { label: 'Latest EB Bill', ta: 'சமீபத்திய மின் கட்டண ரசீது', sub: 'Last 3 months electricity bill copy', icon: Zap },
                   { label: 'Property Tax Receipt', ta: 'சொத்து வரி ரசீது', sub: 'Current year paid tax receipt', icon: Home },
                   { label: 'Bank Passbook / Cheque', ta: 'வங்கி கணக்கு புத்தகம்', sub: 'For direct DBT subsidy credit to your account', icon: Building },
