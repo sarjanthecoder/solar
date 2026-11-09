@@ -29,24 +29,23 @@ export default function ContactSection() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Build the WhatsApp pre-filled message with greetings + user details
-    const greeting = `Hello Solar Arise! 🌞`;
-    const intro = `I saw your advertisement and I'm interested in solar solutions. Please contact me for more information.`;
-    const details = [
+    const { name, city, phone, email } = formData;
+
+    // Build clean WhatsApp message with all form details
+    const lines = [
+      `🌞 *New Solar Quote Request — Solar Arise*`,
       ``,
-      `📋 *My Details:*`,
-      `👤 Name: ${formData.name}`,
-      formData.city ? `📍 District: ${formData.city}` : '',
-      `📞 Phone: ${formData.phone}`,
-      formData.email ? `📧 Email: ${formData.email}` : '',
+      `👤 *Name:* ${name}`,
+      city  ? `📍 *District:* ${city}`  : '',
+      `📞 *Phone:* ${phone}`,
+      email ? `📧 *Email:* ${email}` : '',
       ``,
-      `Please call me at your earliest convenience. I'd love to know more about solar installation, government subsidies, and pricing options.`,
+      `💬 I saw your ad and I'm interested in solar installation. Please contact me with details about pricing, government subsidies, and installation process.`,
       ``,
-      `Thank you! 🙏`,
+      `🙏 Thank you! Please call me at the earliest convenience.`,
     ].filter(Boolean).join('\n');
 
-    const fullMessage = `${greeting}\n\n${intro}\n${details}`;
-    const whatsappUrl = `https://wa.me/919600281759?text=${encodeURIComponent(fullMessage)}`;
+    const whatsappUrl = `https://wa.me/919600281759?text=${encodeURIComponent(lines)}`;
 
     // Confetti celebration
     try {
@@ -55,12 +54,12 @@ export default function ContactSection() {
 
     setIsSubmitted(true);
 
-    // Open WhatsApp in new tab with pre-filled message
+    // Open WhatsApp with pre-filled message
     setTimeout(() => {
       window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-    }, 400);
+    }, 300);
 
-    // Reset form after a few seconds
+    // Reset form after 5 seconds
     setTimeout(() => {
       setIsSubmitted(false);
       setFormData({ name: '', city: '', phone: '', email: '' });
@@ -178,6 +177,7 @@ export default function ContactSection() {
                     <GoogleMapsLogo className="w-4 h-4" />
                   </div>
                   <select
+                    required
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="
